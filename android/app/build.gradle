@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
 
+// Build number from CI (-Pvc=N) so each APK is a newer version.
+def vc = (project.findProperty("vc") ?: "1").toString().toInteger()
+
 android {
     namespace "com.npmartinez.ip4k"
     compileSdk rootProject.ext.compileSdkVersion
@@ -7,8 +10,8 @@ android {
         applicationId "com.npmartinez.ip4k"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode ((project.findProperty("vc") ?: "1") as String).toInteger()
-        versionName "1." + ((project.findProperty("vc") ?: "1") as String)
+        versionCode vc
+        versionName "1.${vc}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
