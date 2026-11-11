@@ -1,0 +1,6 @@
+{
+  "appId": "com.npmartinez.ip4k",
+  "appName": "4K Pursuit",
+  "webDir": "web",
+  "android": { "allowMixedContent": false }
+}

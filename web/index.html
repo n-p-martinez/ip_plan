@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>4K Pursuit</title>
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#171B22" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="4K Pursuit">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one-column phone app; sticky header with the three track lines, content, fixed bottom tab bar. */
+:root{
+  --bg:#F2F4F6; --surface:#FFFFFF; --ink:#14181F; --muted:#5B6573; --line:#D9DEE5;
+  --red:#C81E3A; --blue:#1F5FBF; --wood:#B07A3B; --ok:#1E7E46; --warn:#9A6514; --soft:#E8ECF1;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-num:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1116; --surface:#171B22; --ink:#E8ECF1; --muted:#9AA4B2; --line:#2A303A;
+  --red:#FF5A6E; --blue:#6EA2FF; --wood:#D9A866; --ok:#4CC47E; --warn:#E2A940; --soft:#1F242D; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1116; --surface:#171B22; --ink:#E8ECF1; --muted:#9AA4B2; --line:#2A303A;
+  --red:#FF5A6E; --blue:#6EA2FF; --wood:#D9A866; --ok:#4CC47E; --warn:#E2A940; --soft:#1F242D; color-scheme:dark}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px)}
+[hidden]{display:none!important}
+img{max-width:100%}
+html{-webkit-text-size-adjust:100%}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:16px;line-height:1.45;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px calc(88px + env(safe-area-inset-bottom,0px))}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+header .in{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px 8px;display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.brand{white-space:nowrap;font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:.02em;text-transform:uppercase}
+.brand small{font-family:var(--f-body);font-weight:500;font-size:13px;color:var(--muted);text-transform:none;letter-spacing:0;margin-left:6px}
+.count{font-family:var(--f-num);font-size:12px;color:var(--muted);white-space:nowrap}
+.lines{height:6px;display:grid;grid-template-rows:2px 2px 2px}
+.lines i:nth-child(1){background:var(--ink)} .lines i:nth-child(2){background:var(--red)} .lines i:nth-child(3){background:var(--blue)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+nav.tabs .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+nav.tabs a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px 10px;color:var(--muted);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+nav.tabs a svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+nav.tabs a[aria-current="page"]{color:var(--ink)}
+nav.tabs a[aria-current="page"] svg{stroke:var(--red)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;text-wrap:balance;margin:0}
+h1{font-size:30px;line-height:1.05;letter-spacing:.01em}
+h2{font-size:20px;text-transform:uppercase;letter-spacing:.04em;margin-top:24px;margin-bottom:8px}
+.eyebrow{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.daynav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.daynav .mid{text-align:center;min-width:0}
+.iconbtn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;width:40px;height:40px;display:grid;place-items:center;cursor:pointer;flex:none}
+.iconbtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+.linkbtn{appearance:none;border:0;background:none;color:var(--blue);font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:2px 4px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;min-width:0}
+.session .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.session h1{font-size:28px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:3px 9px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip.A{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.chip.B{color:var(--ink)}
+.chip.test{border-color:var(--wood);color:var(--wood)}
+.chip.rec{border-color:var(--ok);color:var(--ok)}
+.chip.race{border-color:var(--red);color:var(--red)}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-top:14px}
+.facts div{background:var(--surface);padding:10px 10px 9px;min-width:0}
+.facts b{display:block;font-family:var(--f-num);font-size:17px;font-weight:500;overflow-wrap:anywhere}
+.facts span{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.detail{margin-top:14px;white-space:pre-wrap}
+.coach{margin-top:12px;padding:10px 12px;border-left:3px solid var(--blue);background:var(--soft);border-radius:0 8px 8px 0;font-size:14px}
+.coach .eyebrow{color:var(--blue)}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.seg button{appearance:none;font:inherit;font-size:14px;font-weight:600;padding:10px 4px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"][data-s="done"]{background:var(--ok);border-color:var(--ok);color:#fff}
+.seg button[aria-pressed="true"][data-s="partial"]{background:var(--warn);border-color:var(--warn);color:#fff}
+.seg button[aria-pressed="true"][data-s="skipped"]{background:var(--muted);border-color:var(--muted);color:var(--surface)}
+.seg button[aria-pressed="true"][data-s="sick"]{background:var(--red);border-color:var(--red);color:#fff}
+label{font-size:13px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;width:100%}
+textarea{min-height:72px;resize:vertical}
+.two{display:grid;grid-template-columns:110px 1fr;gap:10px;align-items:end}
+.btn{appearance:none;font:inherit;font-weight:600;border:0;border-radius:8px;padding:11px 16px;background:var(--ink);color:var(--surface);cursor:pointer}
+.btn[disabled]{opacity:.5;cursor:default}
+.status{font-size:13px;color:var(--muted);min-height:1.2em}
+.mini{display:flex;flex-direction:column;gap:0}
+.mini a{display:grid;grid-template-columns:46px 1fr auto;gap:10px;align-items:center;padding:11px 2px;border-top:1px solid var(--line);color:inherit;text-decoration:none}
+.mini a:first-child{border-top:0}
+.mini .d{font-family:var(--f-num);font-size:12px;color:var(--muted);line-height:1.2}
+.mini .d b{display:block;font-family:var(--f-display);font-size:18px;color:var(--ink);font-weight:700}
+.mini .n{min-width:0}
+.mini .n div{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mini .n small{color:var(--muted)}
+.mini a.today{background:var(--soft);border-radius:8px;border-top-color:transparent}
+.dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--line);flex:none}
+.dot.done{background:var(--ok);border-color:var(--ok)} .dot.partial{background:var(--warn);border-color:var(--warn)}
+.dot.skipped{background:var(--muted);border-color:var(--muted)} .dot.sick{background:var(--red);border-color:var(--red)}
+.weekhead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:6px}
+.bar{height:8px;border-radius:4px;background:var(--soft);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--blue)}
+.phase{margin-top:18px}
+.phase h3{font-size:18px;text-transform:uppercase;letter-spacing:.04em;display:flex;justify-content:space-between;gap:8px}
+.wk{display:grid;grid-template-columns:34px 64px 1fr auto;gap:8px;align-items:baseline;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+.wk.now{background:var(--soft);border-radius:8px;padding-inline:6px;border-top-color:transparent}
+.wk .t{min-width:0}
+.wk .t div{font-weight:600}
+.wk .t small{color:var(--muted);display:block;overflow-wrap:anywhere}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.tile b{font-family:var(--f-display);font-size:34px;line-height:1;font-weight:700;display:block}
+.tile b small{font-family:var(--f-body);font-size:14px;color:var(--muted);font-weight:500;margin-left:3px}
+.tile span{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:9px 10px;border-top:1px solid var(--line);vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-top:0;font-weight:600;white-space:nowrap}
+td.n,th.n{text-align:right;font-family:var(--f-num);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hl td{background:var(--soft)}
+.zsw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:baseline}
+.chart svg{width:100%;height:auto;display:block}
+.note{font-size:13px;color:var(--muted)}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.chip.chg{border-color:var(--blue);color:var(--blue)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}
+.banner{font-size:13px;padding:8px 12px;border-radius:8px;background:var(--soft);color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.card,.tile{transition:border-color .15s}}
+@media (min-width:560px){.tiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+
+</head><body>
+<header><div class="in"><div class="brand">4K Pursuit<small id="hdrWeek"></small></div><div class="count" id="hdrCount"></div></div><div class="lines" aria-hidden="true"><i></i><i></i><i></i></div></header>
+
+<main class="wrap" id="app"></main>
+
+<nav class="tabs" aria-label="Sections"><div class="in">
+  <a href="#day" data-tab="day"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>Day</a>
+  <a href="#week" data-tab="week"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Week</a>
+  <a href="#season" data-tab="season"><svg viewBox="0 0 24 24"><path d="M4 19h16M6 16V9M10 16V6M14 16v-5M18 16V4"/></svg>Season</a>
+  <a href="#numbers" data-tab="numbers"><svg viewBox="0 0 24 24"><path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 18l4-6"/></svg>Numbers</a>
+</div></nav>
+
+<script type="application/json" id="plan">{"version":"2026-11-11T10:24","cal":[{"date":"2026-10-12","wk":"Wk 1 (Reintro)","pr":"A","type":"Strength","name":"Gym Intro A: Lower","min":45,"target":"N/A","cad":"N/A","detail":"First lifting since July. Warm-up 10 min. Goblet squat 3x10 RPE6, DB Romanian deadlift 3x10, split squat 2x8/leg (bodyweight), glute bridge 2x12, front plank 3x30 s. Leave 3+ reps in the tank every set.","tag":"STR-INTRO-A","note":"Gym done (confirmed 9 Nov). | Expect soreness 24-48 h. That is the point of starting light."},{"date":"2026-10-13","wk":"Wk 1 (Reintro)","pr":"A","type":"Bike","name":"Endurance Z2 + spin-ups","min":75,"target":"160-215","cad":"90-100","detail":"Steady Z2. In the last 20 min: 6 x 20 s spin-ups to 120+ rpm, smooth, no bouncing; 1:40 easy between.","tag":"END-Z2-SPIN","note":"DONE: 75 min trainer, 106 W avg / 126 NP, HR 98 avg. Spin-ups done (max 148 rpm). Only 30% of time in Z2, mostly below it."},{"date":"2026-10-14","wk":"Wk 1 (Reintro)","pr":"B","type":"Strength","name":"Gym Intro B: Posterior/Upper","min":45,"target":"N/A","cad":"N/A","detail":"Hex bar deadlift 3x6 light RPE6, step-ups 2x8/leg, DB row 3x10, push-ups 3x10, dead bug 3x8/side.","tag":"STR-INTRO-B","note":"Gym done (confirmed 9 Nov) + 30 min easy ride (86 W avg)."},{"date":"2026-10-15","wk":"Wk 1 (Reintro)","pr":"A","type":"Bike","name":"CX race OR Tempo 3x10","min":60,"target":"217-249","cad":"90-100","detail":"If racing Thursday-night CX, the race is this session. Otherwise: warm-up 15 min, 3 x 10 min Z3, 5 min easy between, cool-down.","tag":"TEMPO-3x10 / CX","note":"DONE: CX race, 37 min, HR 131 avg / 163 max (no power). | CX races count as intensity. Do not add another hard day."},{"date":"2026-10-16","wk":"Wk 1 (Reintro)","pr":"-","type":"Rest","name":"Rest day","min":0,"target":null,"cad":null,"detail":"Full rest. Walk is fine.","tag":"REST","note":"Rest (no file)."},{"date":"2026-10-17","wk":"Wk 1 (Reintro)","pr":"A","type":"Bike","name":"Long Z2 + seated accelerations","min":120,"target":"160-215","cad":"85-95","detail":"Road if dry, otherwise trainer. In the first hour: 4 x 10 s seated accelerations from ~20 km/h in a big gear, 3 min easy between. Rest of ride steady Z2.","tag":"LR-ACCEL4","note":"DONE: 120 min trainer, 127 W avg / 158 NP. 4 accelerations (peaks 646-891 W). 38% of time in Z2."},{"date":"2026-10-18","wk":"Wk 1 (Reintro)","pr":"B","type":"Bike","name":"Z2 + cadence ladder","min":90,"target":"160-215","cad":"95/105/110/115","detail":"Warm-up 15 min. 4 x 5 min in Z2 at 95 / 105 / 110 / 115 rpm, 3 min normal cadence between. Rest Z2.","tag":"END-CAD4x5","note":"DONE: 90 min, 118 W avg / 140 NP. Cadence blocks mostly 78-88 rpm; one block at ~103, one at ~115 (targets 95/105/110/115). | Pursuit cadence is 110-120. This is where it starts."},{"date":"2026-10-19","wk":"Wk 2 (Test)","pr":"A","type":"Strength","name":"Gym A: Lower","min":60,"target":"N/A","cad":"N/A","detail":"First barbell session. Back squat 3x6 RPE6-7, Romanian deadlift 3x8, split squat 3x8/leg, plank 3x40 s.","tag":"STR-A","note":"Gym done (confirmed 9 Nov). | Nothing above RPE7: tests on Tue and Sat."},{"date":"2026-10-20","wk":"Wk 2 (Test)","pr":"A","type":"Test","name":"TEST A: sprint + 4-min max","min":75,"target":"Max","cad":"Sprint free; 4-min 100-115","detail":"Warm-up 20 min incl. 3 x 1 min Z4 and 2 x 10 s spin-ups. 5 min easy. 3 x 8 s max sprints from ~25 km/h, 3 min easy between. 10 min easy. 4-min all-out, seated, aero position if possible; start ~5% above what you think you can hold for 30 s, then settle, empty the tank in the last 60 s. Cool-down 15 min. Trainer in level/resistance mode, NOT ERG.","tag":"TEST-A","note":"DONE: 4-min 370 W, 103 rpm, HR to 158. Even pacing, 421 W last 30 s. Peak 5 s 956 W, peak 1,002 W. Entered in Zones!B5. | Enter 4-min average in Zones!B5 and in Tests tab."},{"date":"2026-10-21","wk":"Wk 2 (Test)","pr":"B","type":"Strength","name":"Gym B: Posterior/Upper (light)","min":50,"target":"N/A","cad":"N/A","detail":"Hex bar deadlift 3x5 RPE6, step-ups 3x8/leg, DB row 3x10, pull-ups or lat pulldown 3x8, dead bug 3x8/side.","tag":"STR-B","note":"Gym done (confirmed 9 Nov)."},{"date":"2026-10-22","wk":"Wk 2 (Test)","pr":"B","type":"Bike","name":"Easy Z2 (no CX this week)","min":60,"target":"160-215","cad":"90-100","detail":"Easy, steady. Skip the CX race this week so Saturday's test is clean.","tag":"END-Z2","note":"DONE: 60 min outdoors, no power. HR 112 avg / 133 max, 83 rpm."},{"date":"2026-10-23","wk":"Wk 2 (Test)","pr":"-","type":"Rest","name":"Rest day","min":0,"target":null,"cad":null,"detail":"Full rest. Walk is fine.","tag":"REST","note":"Rest (no file)."},{"date":"2026-10-24","wk":"Wk 2 (Test)","pr":"A","type":"Test","name":"TEST B: 20-min","min":75,"target":"Max","cad":"90-105","detail":"Warm-up 20 min incl. 3 x 1 min Z4. 5 min easy. 5 min hard (~280 W) then 10 min easy. 20 min best even effort: first 5 min at ~265 W, then hold or build by 5-10 W every 5 min if it feels controlled; empty it in the last 3 min. Same trainer and level mode as Test A. Cool-down 10 min. ERG off.","tag":"TEST-B","note":"DONE: 20-min 301.5 W, 93 rpm, HR 131 -> 160. Built from 282 to 329 W per 2.5 min, strongest at the end. FTP 286 W. Entered in Zones!B4. | Enter 20-min average in Zones!B4. All zones update."},{"date":"2026-10-25","wk":"Wk 2 (Test)","pr":"B","type":"Bike","name":"Easy Z2","min":120,"target":"160-215","cad":"85-95","detail":"Easy steady Z2, road if dry.","tag":"END-Z2","note":"DONE: 120 min trainer, 139 W avg / 166 NP, HR 103. 37% of time in Z2 (first ride on the new zones)."},{"date":"2026-10-26","wk":"Wk 3 (Build)","pr":"A","type":"Strength","name":"Gym A: Lower","min":60,"target":"N/A","cad":"N/A","detail":"Back squat 4x6 RPE7, Romanian deadlift 3x8, Bulgarian split squat 3x8/leg, single-leg calf raise 3x12, side plank 2x30 s/side.","tag":"STR-A","note":"Gym done (confirmed 9 Nov). | Add load only if last week's sets all felt RPE6-7."},{"date":"2026-10-27","wk":"Wk 3 (Build)","pr":"A","type":"Bike","name":"Sweet spot 3x12","min":80,"target":"252-269","cad":"95-100","detail":"Warm-up 15 min incl. 3 x 30 s fast pedal. 3 x 12 min sweet spot, 5 min easy between. Cool-down 10 min. ERG fine.","tag":"SS-3x12","note":"DONE: SS 3x12: reps ~255 / ~248 / ~229 W (target 252-269). Rep 3 faded, with cadence dips. HR max 140. | Zones now come from your tests."},{"date":"2026-10-28","wk":"Wk 3 (Build)","pr":"B","type":"Strength","name":"Gym B: Posterior/Upper","min":60,"target":"N/A","cad":"N/A","detail":"Hex bar deadlift 4x5 RPE7, step-ups 3x8/leg, hip thrust 3x10, DB row 3x10, pull-ups 3x6-8, dead bug 3x10/side.","tag":"STR-B","note":"Gym done (confirmed 9 Nov)."},{"date":"2026-10-29","wk":"Wk 3 (Build)","pr":"A","type":"Bike","name":"CX race OR VO2 5x3","min":60,"target":"315-352","cad":"100-110","detail":"CX race counts. Otherwise: warm-up 15 min, 5 x 3 min Z5, 3 min easy between, cool-down.","tag":"VO2-5x3 / CX","note":"DONE: CX race (2 files, 38 + 29 min), HR 129-142 avg / 158 max, no power."},{"date":"2026-10-30","wk":"Wk 3 (Build)","pr":"C","type":"Bike","name":"Recovery spin","min":45,"target":"Under 157","cad":"95-100","detail":"Very easy. Skip if tired.","tag":"REC","note":"No file."},{"date":"2026-10-31","wk":"Wk 3 (Build)","pr":"A","type":"Bike","name":"Long Z2 + 4 standing starts","min":150,"target":"160-215","cad":"Varies","detail":"Steady Z2. In hour 1: 4 x 10 s standing starts from a stop in a big gear (single-speed CX bike works), quiet dry road only, full recovery. If wet: 6 x 10 s seated big-gear accelerations on the trainer instead.","tag":"LR-STARTx4","note":"You: sick, did not do. File: 61 min with the Sunday cadence session done instead, 5 x 6 min at ~180-200 W and 101 / 104 / 109 / 109 / 110 rpm."},{"date":"2026-11-01","wk":"Wk 3 (Build)","pr":"B","type":"Bike","name":"Z2 + cadence blocks","min":105,"target":"160-215","cad":"100-120","detail":"Warm-up 15 min. 5 x 6 min in Z2 at 100 / 105 / 110 / 115 / 120 rpm, 3 min easy between. Rest Z2.","tag":"END-CAD5x6","note":"You: Complete. No file uploaded for 1 Nov (the cadence blocks are in the 31 Oct file)."},{"date":"2026-11-02","wk":"Wk 4 (Recovery)","pr":"B","type":"Strength","name":"Gym A (light)","min":45,"target":"N/A","cad":"N/A","detail":"Same as Wk 3 Gym A, drop one set of each lift, RPE6.","tag":"STR-A-LIGHT","note":"You: Complete."},{"date":"2026-11-03","wk":"Wk 4 (Recovery)","pr":"A","type":"Bike","name":"Z2 + 3x5 tempo","min":60,"target":"217-249","cad":"95-100","detail":"Z2 with 3 x 5 min Z3 in the middle.","tag":"END-TEMPO3x5","note":"You: Complete. File: 60 min, tempo reps ~251 / ~228 / ~235 W (target 217-249)."},{"date":"2026-11-04","wk":"Wk 4 (Recovery)","pr":"B","type":"Strength","name":"Gym B (light)","min":45,"target":"N/A","cad":"N/A","detail":"Same as Wk 3 Gym B, drop one set of each lift, RPE6.","tag":"STR-B-LIGHT","note":"You: sick"},{"date":"2026-11-05","wk":"Wk 4 (Recovery)","pr":"B","type":"Bike","name":"CX race OR easy Z2","min":60,"target":"160-215","cad":"90-100","detail":"Race if you want it; otherwise easy.","tag":"END-Z2 / CX","note":"You: sick"},{"date":"2026-11-06","wk":"Wk 4 (Recovery)","pr":"-","type":"Rest","name":"Rest day","min":0,"target":null,"cad":null,"detail":"Full rest. Walk is fine.","tag":"REST","note":"You: sick, rest"},{"date":"2026-11-07","wk":"Wk 4 (Recovery)","pr":"A","type":"Bike","name":"Z2 + 4 seated accelerations","min":90,"target":"160-215","cad":"85-95","detail":"Easy Z2, 4 x 10 s seated accelerations in hour 1.","tag":"END-ACCEL4","note":"DONE: 90 min, 151 W avg / 183 NP, HR 111. 4 accelerations (peaks 590-697 W)."},{"date":"2026-11-08","wk":"Wk 4 (Recovery)","pr":"B","type":"Bike","name":"Easy Z2","min":75,"target":"160-215","cad":"85-95","detail":"Easy. Log weight trend for the month.","tag":"END-Z2","note":"DONE: 75 min, 145 W avg / 173 NP, HR 110. First 30 min solid Z2 at 200-215 W. | Base 1 starts Mon 9 Nov."},{"date":"2026-11-09","wk":"Wk 5 (Base 1 re-entry)","pr":"A","type":"Strength","name":"Gym A: Lower","min":60,"target":"N/A","cad":"N/A","detail":"Back squat 4x6 RPE7 (RPE6 if the 26 Oct session was missed), Romanian deadlift 3x8, Bulgarian split squat 3x8/leg, single-leg calf raise 3x12, side plank 2x30 s/side.","tag":"STR-A","note":"First full week after illness: 8.25 h, not 10."},{"date":"2026-11-10","wk":"Wk 5 (Base 1 re-entry)","pr":"A","type":"Bike","name":"Sweet spot 2-3x12 (repeat)","min":90,"target":"252-269","cad":"90-100","detail":"Warm-up 15 min incl. 3 x 30 s fast pedal. 2 x 12 min sweet spot, 5 min easy between. Third rep only if HR and legs feel normal; stop the set if HR runs 10+ bpm above the 27 Oct session (~127-140) at the same watts. Z2 to fill.","tag":"SS-3x12","note":"Post-fever: cold with light fever, ~90% gone on 9 Nov."},{"date":"2026-11-11","wk":"Wk 5 (Base 1 re-entry)","pr":"B","type":"Strength","name":"Gym B: Posterior/Upper","min":60,"target":"N/A","cad":"N/A","detail":"Hex bar deadlift 4x5 RPE7, step-ups 3x8/leg, hip thrust 3x10, DB row 3x10, pull-ups 3x6-8, dead bug 3x10/side.","tag":"STR-B","note":null},{"date":"2026-11-12","wk":"Wk 5 (Base 1 re-entry)","pr":"A","type":"Bike","name":"Easy Z2 (no CX, no VO2)","min":60,"target":"160-215","cad":"90-100","detail":"Steady Z2. No race and no VO2 this week: he had a fever, so full intensity waits until he is fully symptom-free. VO2 returns next Thursday (6x3 -> start at 5x3 if he's still not 100%).","tag":"END-Z2","note":"Changed 9 Nov: fever."},{"date":"2026-11-13","wk":"Wk 5 (Base 1 re-entry)","pr":"-","type":"Rest","name":"Rest day","min":0,"target":null,"cad":null,"detail":"Full rest. Walk is fine.","tag":"REST","note":null},{"date":"2026-11-14","wk":"Wk 5 (Base 1 re-entry)","pr":"A","type":"Bike","name":"Long Z2 + 4 standing starts","min":120,"target":"160-215","cad":"Varies","detail":"The session missed on 31 Oct. Road if dry; trainer capped at 2 h. 4 x 10 s standing starts from a stop in a big gear (single-speed CX bike works), quiet dry road only, full recovery. Trainer: 6 x 10 s seated big-gear accelerations instead. Trainer Z2: use ERG at ~175 W so the watts stay in Z2.","tag":"LR-STARTx4","note":null},{"date":"2026-11-15","wk":"Wk 5 (Base 1 re-entry)","pr":"B","type":"Bike","name":"Z2 + cadence blocks","min":105,"target":"160-215","cad":"105-120","detail":"Warm-up 15 min. 4 x 6 min in Z2 at 105 / 110 / 115 / 120 rpm, 3 min easy between. Rest Z2. Last ladder topped out at ~110 rpm: the 115 and 120 blocks are the point.","tag":"END-CAD4x6","note":null},{"date":"2026-11-16","wk":"Wk 6 (Base 1)","pr":"A","type":"Strength","name":"Gym A: Lower","min":60,"target":"N/A","cad":"N/A","detail":"Back squat 4x5 RPE7-8, Romanian deadlift 3x8, Bulgarian split squat 3x8/leg, calf raise 3x12, side plank 2x40 s/side.","tag":"STR-A","note":null},{"date":"2026-11-17","wk":"Wk 6 (Base 1)","pr":"A","type":"Bike","name":"Sweet spot 2x15","min":90,"target":"252-269","cad":"90-100","detail":"Warm-up 15 min. 2 x 15 min sweet spot, 5 min easy between. Then 3 x 30 s fast pedal at 120+ rpm. Z2 to fill.","tag":"SS-2x15","note":null},{"date":"2026-11-18","wk":"Wk 6 (Base 1)","pr":"B","type":"Strength","name":"Gym B: Posterior/Upper","min":60,"target":"N/A","cad":"N/A","detail":"Hex bar deadlift 4x5 RPE7-8, step-ups 3x8/leg, hip thrust 3x8, row 3x10, pull-ups 3x6-8, dead bug.","tag":"STR-B","note":null},{"date":"2026-11-19","wk":"Wk 6 (Base 1)","pr":"A","type":"Bike","name":"CX race OR VO2 6x3","min":60,"target":"315-352","cad":"100-110","detail":"CX race (first race of the night is the session): first lap no faster than the average of the others (pursuit pacing practice), then HR 155+ from lap 2 on, lap-average HR 150+. Second race: easy spin or skip. No race: warm-up 15 min, 6 x 3 min Z5, 3 min easy between, cool-down.","tag":"VO2-6x3 / CX","note":"Lap HR so far 133-148: the race counts as VO2 only if the HR targets are hit."},{"date":"2026-11-20","wk":"Wk 6 (Base 1)","pr":"C","type":"Bike","name":"Recovery spin","min":45,"target":"Under 157","cad":"95-100","detail":"Very easy. Skip if tired.","tag":"REC","note":null},{"date":"2026-11-21","wk":"Wk 6 (Base 1)","pr":"A","type":"Bike","name":"Long Z2","min":150,"target":"160-215","cad":"85-95","detail":"Outdoors if possible. In hour 1: 6 x 10 s seated big-gear accelerations, 3 min easy between. Trainer: 2 h, move the rest to Sunday. Trainer Z2: use ERG at ~175 W so the watts stay in Z2.","tag":"LR-ACCEL6","note":null},{"date":"2026-11-22","wk":"Wk 6 (Base 1)","pr":"B","type":"Bike","name":"Z2 + cadence + tempo","min":135,"target":"160-215","cad":"95-120","detail":"Z2 with 4 x 5 min at 115-120 rpm (3 min easy between) and 2 x 8 min Z3 in the second half. Trainer Z2: use ERG at ~175 W so the watts stay in Z2.","tag":"END-CAD-TEMPO","note":null},{"date":"2026-11-23","wk":"Wk 7 (Base 1)","pr":"A","type":"Strength","name":"Gym A: Lower","min":60,"target":"N/A","cad":"N/A","detail":"Back squat 4x5 RPE8, Romanian deadlift 3x6, Bulgarian split squat 3x6/leg, calf raise, core.","tag":"STR-A","note":null},{"date":"2026-11-24","wk":"Wk 7 (Base 1)","pr":"A","type":"Bike","name":"Sweet spot 2x20","min":95,"target":"252-269","cad":"90-100","detail":"Warm-up 15 min. 2 x 20 min sweet spot, 5 min easy between. Z2 to fill.","tag":"SS-2x20","note":null},{"date":"2026-11-25","wk":"Wk 7 (Base 1)","pr":"B","type":"Strength","name":"Gym B: Posterior/Upper","min":60,"target":"N/A","cad":"N/A","detail":"Hex bar deadlift 4x4 RPE8, step-ups 3x6/leg, hip thrust 3x8, row, pull-ups, core.","tag":"STR-B","note":null},{"date":"2026-11-26","wk":"Wk 7 (Base 1)","pr":"B","type":"Bike","name":"Thanksgiving Z2 (or CX race)","min":90,"target":"160-215","cad":"90-100","detail":"Morning Z2 before the day. If there's a CX race, race it and skip Friday's VO2.","tag":"END-Z2 / CX","note":"Thanksgiving."},{"date":"2026-11-27","wk":"Wk 7 (Base 1)","pr":"A","type":"Bike","name":"VO2 6x3","min":75,"target":"315-352","cad":"100-110","detail":"Warm-up 15 min. 6 x 3 min Z5, 3 min easy between. Z2 to fill. Skip if Thursday was a CX race.","tag":"VO2-6x3","note":"Moved from Thursday for the holiday."},{"date":"2026-11-28","wk":"Wk 7 (Base 1)","pr":"A","type":"Bike","name":"Long Z2","min":150,"target":"160-215","cad":"85-95","detail":"Outdoors if possible. Steady Z2. Trainer: cap at 2 h. Trainer Z2: use ERG at ~175 W so the watts stay in Z2.","tag":"LR-Z2","note":null},{"date":"2026-11-29","wk":"Wk 7 (Base 1)","pr":"B","type":"Bike","name":"Easy Z2","min":75,"target":"160-215","cad":"90-100","detail":"Easy. Trainer Z2: use ERG at ~175 W so the watts stay in Z2.","tag":"END-Z2","note":null},{"date":"2026-11-30","wk":"Wk 8 (Recovery)","pr":"B","type":"Strength","name":"Gym A (light)","min":45,"target":"N/A","cad":"N/A","detail":"Same as Wk 7 Gym A, drop one set of each lift, RPE6.","tag":"STR-A-LIGHT","note":null},{"date":"2026-12-01","wk":"Wk 8 (Recovery)","pr":"A","type":"Bike","name":"Z2 + 3x8 tempo","min":75,"target":"217-249","cad":"95-100","detail":"Z2 with 3 x 8 min Z3, 4 min easy between.","tag":"END-TEMPO3x8","note":null},{"date":"2026-12-02","wk":"Wk 8 (Recovery)","pr":"B","type":"Strength","name":"Gym B (light)","min":45,"target":"N/A","cad":"N/A","detail":"Same as Wk 7 Gym B, drop one set, RPE6.","tag":"STR-B-LIGHT","note":null},{"date":"2026-12-03","wk":"Wk 8 (Recovery)","pr":"B","type":"Bike","name":"CX race OR easy Z2","min":60,"target":"160-215","cad":"90-100","detail":"Recovery week: one race only, hard if he feels fresh, otherwise ride it steady. Or easy Z2.","tag":"END-Z2 / CX","note":null},{"date":"2026-12-04","wk":"Wk 8 (Recovery)","pr":"-","type":"Rest","name":"Rest day","min":0,"target":null,"cad":null,"detail":"Full rest. Walk is fine.","tag":"REST","note":null},{"date":"2026-12-05","wk":"Wk 8 (Recovery)","pr":"A","type":"Bike","name":"Long Z2","min":120,"target":"160-215","cad":"85-95","detail":"Steady Z2. Trainer Z2: use ERG at ~175 W so the watts stay in Z2.","tag":"LR-Z2","note":null},{"date":"2026-12-06","wk":"Wk 8 (Recovery)","pr":"B","type":"Bike","name":"Easy Z2 + spin-ups","min":75,"target":"160-215","cad":"90-100","detail":"Easy Z2 with 6 x 20 s spin-ups to 125+ rpm. Log the month's weight trend.","tag":"END-Z2-SPIN","note":"Weeks 9-12 written after reviewing this block."}],"season":[{"wk":1,"mon":"2026-10-12","phase":"Return","type":"Reintro","focus":"Reintro after HFMD break; first gym since July. Gym restart at RPE6. Z2 riding, spin-ups, cadence ladder. CX race or tempo Thursday.","h10":7.25,"gym":1.5,"h12":7.25,"h15":7.25,"wt":245,"tests":null,"notes":null},{"wk":2,"mon":"2026-10-19","phase":"Return","type":"Test","focus":"Tests. Test A (sprint + 4-min) and Test B (20-min). Gym held at RPE6-7.","h10":7.33,"gym":1.83,"h12":7.33,"h15":7.33,"wt":244,"tests":"Test A Tue 20 Oct; Test B Sat 24 Oct","notes":"Zones switch to test values"},{"wk":3,"mon":"2026-10-26","phase":"Return","type":"Build","focus":"First block on test-based zones: sweet spot 3x12, VO2 5x3 or CX race, long Z2 with 4 standing starts.","h10":9.33,"gym":2,"h12":10.5,"h15":11,"wt":243,"tests":null,"notes":"CX race counts as Thursday intensity"},{"wk":4,"mon":"2026-11-02","phase":"Return","type":"Recovery","focus":"Light gym, Z2 + short tempo. Absorb the block.","h10":6.25,"gym":1.5,"h12":7,"h15":7.5,"wt":242,"tests":null,"notes":"Recovery"},{"wk":5,"mon":"2026-11-09","phase":"Base 1","type":"Build","focus":"Re-entry after illness 4-6 Nov (8.25 h). Gym strength (4x6 -> 4x5). Tue sweet spot -> threshold (3x12 SS to 2x20 SS). Thu CX race or VO2 5x3 -> 6x3. Sat long Z2. Sun Z2 + cadence to 120 rpm.","h10":8.25,"gym":2,"h12":12,"h15":15,"wt":241,"tests":null,"notes":"CX season: race Thursdays if wanted, through mid-Dec"},{"wk":6,"mon":"2026-11-16","phase":"Base 1","type":"Build","focus":"Gym strength (4x6 -> 4x5). Tue sweet spot -> threshold (3x12 SS to 2x20 SS). Thu CX race or VO2 5x3 -> 6x3. Sat long Z2. Sun Z2 + cadence to 120 rpm.","h10":10,"gym":2,"h12":12,"h15":15,"wt":240,"tests":null,"notes":null},{"wk":7,"mon":"2026-11-23","phase":"Base 1","type":"Build","focus":"Thanksgiving week: VO2 moves to Friday. Gym strength (4x6 -> 4x5). Tue sweet spot -> threshold (3x12 SS to 2x20 SS). Thu CX race or VO2 5x3 -> 6x3. Sat long Z2. Sun Z2 + cadence to 120 rpm.","h10":10.08,"gym":2,"h12":12,"h15":15,"wt":239,"tests":null,"notes":null},{"wk":8,"mon":"2026-11-30","phase":"Base 1","type":"Recovery","focus":"Recovery week: ~70% volume, one short quality session, gym light. ","h10":7,"gym":1.5,"h12":8,"h15":10,"wt":237.9,"tests":null,"notes":null},{"wk":9,"mon":"2026-12-07","phase":"Base 1","type":"Build","focus":"Gym strength (4x6 -> 4x5). Tue sweet spot -> threshold (3x12 SS to 2x20 SS). Thu CX race or VO2 5x3 -> 6x3. Sat long Z2. Sun Z2 + cadence to 120 rpm.","h10":10,"gym":2,"h12":12,"h15":15,"wt":236.9,"tests":null,"notes":null},{"wk":10,"mon":"2026-12-14","phase":"Base 1","type":"Build","focus":"Gym strength (4x6 -> 4x5). Tue sweet spot -> threshold (3x12 SS to 2x20 SS). Thu CX race or VO2 5x3 -> 6x3. Sat long Z2. Sun Z2 + cadence to 120 rpm.","h10":10,"gym":2,"h12":12,"h15":15,"wt":235.9,"tests":null,"notes":null},{"wk":11,"mon":"2026-12-21","phase":"Base 1","type":"Build","focus":"Gym strength (4x6 -> 4x5). Tue sweet spot -> threshold (3x12 SS to 2x20 SS). Thu CX race or VO2 5x3 -> 6x3. Sat long Z2. Sun Z2 + cadence to 120 rpm.","h10":10,"gym":2,"h12":12,"h15":15,"wt":234.9,"tests":null,"notes":"Holiday week: if travel, do the A sessions only"},{"wk":12,"mon":"2026-12-28","phase":"Base 1","type":"Recovery","focus":"Recovery week: ~70% volume, one short quality session, gym light. Retest at end of week.","h10":7,"gym":1.5,"h12":8,"h15":10,"wt":233.9,"tests":"Test A Tue 29 Dec; Test B Sat 2 Jan","notes":"Recovery + retest"},{"wk":13,"mon":"2027-01-04","phase":"Base 2 / Strength","type":"Build","focus":"Gym max strength (5x3-5 @ ~85%). Tue threshold 3x12-15 @ 95-100% at 100-110 rpm. Thu VO2 4-5 x 4 min (pursuit duration). Sat long Z2 + standing starts (road if dry). Sun Z2 + high cadence.","h10":10,"gym":2,"h12":12,"h15":15,"wt":232.9,"tests":null,"notes":null},{"wk":14,"mon":"2027-01-11","phase":"Base 2 / Strength","type":"Build","focus":"Gym max strength (5x3-5 @ ~85%). Tue threshold 3x12-15 @ 95-100% at 100-110 rpm. Thu VO2 4-5 x 4 min (pursuit duration). Sat long Z2 + standing starts (road if dry). Sun Z2 + high cadence.","h10":10,"gym":2,"h12":12,"h15":15,"wt":231.9,"tests":null,"notes":null},{"wk":15,"mon":"2027-01-18","phase":"Base 2 / Strength","type":"Build","focus":"Gym max strength (5x3-5 @ ~85%). Tue threshold 3x12-15 @ 95-100% at 100-110 rpm. Thu VO2 4-5 x 4 min (pursuit duration). Sat long Z2 + standing starts (road if dry). Sun Z2 + high cadence.","h10":10,"gym":2,"h12":12,"h15":15,"wt":230.9,"tests":null,"notes":null},{"wk":16,"mon":"2027-01-25","phase":"Base 2 / Strength","type":"Recovery","focus":"Recovery week: ~70% volume, one short quality session, gym light. ","h10":7,"gym":1.5,"h12":8,"h15":10,"wt":229.9,"tests":null,"notes":null},{"wk":17,"mon":"2027-02-01","phase":"Base 2 / Strength","type":"Build","focus":"Gym max strength (5x3-5 @ ~85%). Tue threshold 3x12-15 @ 95-100% at 100-110 rpm. Thu VO2 4-5 x 4 min (pursuit duration). Sat long Z2 + standing starts (road if dry). Sun Z2 + high cadence.","h10":10,"gym":2,"h12":12,"h15":15,"wt":228.9,"tests":null,"notes":null},{"wk":18,"mon":"2027-02-08","phase":"Base 2 / Strength","type":"Build","focus":"Gym max strength (5x3-5 @ ~85%). Tue threshold 3x12-15 @ 95-100% at 100-110 rpm. Thu VO2 4-5 x 4 min (pursuit duration). Sat long Z2 + standing starts (road if dry). Sun Z2 + high cadence.","h10":10,"gym":2,"h12":12,"h15":15,"wt":227.9,"tests":null,"notes":null},{"wk":19,"mon":"2027-02-15","phase":"Base 2 / Strength","type":"Build","focus":"Gym max strength (5x3-5 @ ~85%). Tue threshold 3x12-15 @ 95-100% at 100-110 rpm. Thu VO2 4-5 x 4 min (pursuit duration). Sat long Z2 + standing starts (road if dry). Sun Z2 + high cadence.","h10":10,"gym":2,"h12":12,"h15":15,"wt":226.9,"tests":null,"notes":null},{"wk":20,"mon":"2027-02-22","phase":"Base 2 / Strength","type":"Recovery","focus":"Recovery week: ~70% volume, one short quality session, gym light. Retest at end of week.","h10":7,"gym":1.5,"h12":8,"h15":10,"wt":225.9,"tests":"Test A Tue 23 Feb; Test B Sat 27 Feb","notes":"Weight checkpoint ~225"},{"wk":21,"mon":"2027-03-01","phase":"Build 1","type":"Build","focus":"Gym to power (heavy triples + jumps). Sat fixed-gear climbs 3-5 x 5-7 min + uphill standing starts. Tue pursuit-pace reps (4x1 -> 3x3 min @ 4-min power). Thu threshold at 105-115 rpm.","h10":10,"gym":1.75,"h12":12,"h15":13,"wt":224.9,"tests":null,"notes":"Fixed-gear road work begins when roads are clear"},{"wk":22,"mon":"2027-03-08","phase":"Build 1","type":"Build","focus":"Gym to power (heavy triples + jumps). Sat fixed-gear climbs 3-5 x 5-7 min + uphill standing starts. Tue pursuit-pace reps (4x1 -> 3x3 min @ 4-min power). Thu threshold at 105-115 rpm.","h10":10,"gym":1.75,"h12":12,"h15":13,"wt":224.4,"tests":null,"notes":null},{"wk":23,"mon":"2027-03-15","phase":"Build 1","type":"Build","focus":"Gym to power (heavy triples + jumps). Sat fixed-gear climbs 3-5 x 5-7 min + uphill standing starts. Tue pursuit-pace reps (4x1 -> 3x3 min @ 4-min power). Thu threshold at 105-115 rpm.","h10":10,"gym":1.75,"h12":12,"h15":13,"wt":223.8,"tests":null,"notes":null},{"wk":24,"mon":"2027-03-22","phase":"Build 1","type":"Recovery","focus":"Recovery week: ~70% volume, one short quality session, gym light. ","h10":7,"gym":1.25,"h12":8,"h15":9,"wt":223.3,"tests":null,"notes":null},{"wk":25,"mon":"2027-03-29","phase":"Build 1","type":"Build","focus":"Gym to power (heavy triples + jumps). Sat fixed-gear climbs 3-5 x 5-7 min + uphill standing starts. Tue pursuit-pace reps (4x1 -> 3x3 min @ 4-min power). Thu threshold at 105-115 rpm.","h10":10,"gym":1.75,"h12":12,"h15":13,"wt":222.7,"tests":null,"notes":null},{"wk":26,"mon":"2027-04-05","phase":"Build 1","type":"Build","focus":"Gym to power (heavy triples + jumps). Sat fixed-gear climbs 3-5 x 5-7 min + uphill standing starts. Tue pursuit-pace reps (4x1 -> 3x3 min @ 4-min power). Thu threshold at 105-115 rpm.","h10":10,"gym":1.75,"h12":12,"h15":13,"wt":222.1,"tests":null,"notes":null},{"wk":27,"mon":"2027-04-12","phase":"Build 1","type":"Build","focus":"Gym to power (heavy triples + jumps). Sat fixed-gear climbs 3-5 x 5-7 min + uphill standing starts. Tue pursuit-pace reps (4x1 -> 3x3 min @ 4-min power). Thu threshold at 105-115 rpm.","h10":10,"gym":1.75,"h12":12,"h15":13,"wt":221.6,"tests":null,"notes":null},{"wk":28,"mon":"2027-04-19","phase":"Build 1","type":"Recovery","focus":"Recovery week: ~70% volume, one short quality session, gym light. Retest at end of week.","h10":7,"gym":1.25,"h12":8,"h15":9,"wt":221,"tests":"Test A Tue 20 Apr; Test B Sat 24 Apr","notes":"Recovery + retest; confirm track dates"},{"wk":29,"mon":"2027-04-26","phase":"Track transition","type":"Build","focus":"Track 1-2x/week: standing starts in race gear, 1 km and 2 km reps at target 200 m split (13.9-14.0 s), position and gear choice. Gym 1x maintenance. Trainer VO2 when no track.","h10":10,"gym":1,"h12":11,"h15":12,"wt":220.5,"tests":null,"notes":"Weight goal ~220 this week; eat to fuel from here"},{"wk":30,"mon":"2027-05-03","phase":"Track transition","type":"Build","focus":"Track 1-2x/week: standing starts in race gear, 1 km and 2 km reps at target 200 m split (13.9-14.0 s), position and gear choice. Gym 1x maintenance. Trainer VO2 when no track.","h10":10,"gym":1,"h12":11,"h15":12,"wt":220,"tests":null,"notes":null},{"wk":31,"mon":"2027-05-10","phase":"Track transition","type":"Build","focus":"Track 1-2x/week: standing starts in race gear, 1 km and 2 km reps at target 200 m split (13.9-14.0 s), position and gear choice. Gym 1x maintenance. Trainer VO2 when no track.","h10":10,"gym":1,"h12":11,"h15":12,"wt":220,"tests":null,"notes":null},{"wk":32,"mon":"2027-05-17","phase":"Track transition","type":"Recovery","focus":"Recovery week: ~70% volume, one short quality session, gym light. ","h10":7,"gym":0.75,"h12":8,"h15":8,"wt":220,"tests":null,"notes":null},{"wk":33,"mon":"2027-05-24","phase":"Track transition","type":"Build","focus":"Track 1-2x/week: standing starts in race gear, 1 km and 2 km reps at target 200 m split (13.9-14.0 s), position and gear choice. Gym 1x maintenance. Trainer VO2 when no track.","h10":10,"gym":1,"h12":11,"h15":12,"wt":220,"tests":null,"notes":null},{"wk":34,"mon":"2027-05-31","phase":"Track transition","type":"Build","focus":"Track 1-2x/week: standing starts in race gear, 1 km and 2 km reps at target 200 m split (13.9-14.0 s), position and gear choice. Gym 1x maintenance. Trainer VO2 when no track.","h10":10,"gym":1,"h12":11,"h15":12,"wt":220,"tests":"First timed 3 km at target pace (track)","notes":"Compare 200 m splits to target"},{"wk":35,"mon":"2027-06-07","phase":"Track transition","type":"Build","focus":"Track 1-2x/week: standing starts in race gear, 1 km and 2 km reps at target 200 m split (13.9-14.0 s), position and gear choice. Gym 1x maintenance. Trainer VO2 when no track.","h10":10,"gym":1,"h12":11,"h15":12,"wt":220,"tests":null,"notes":null},{"wk":36,"mon":"2027-06-14","phase":"Track transition","type":"Recovery","focus":"Recovery week: ~70% volume, one short quality session, gym light. ","h10":7,"gym":0.75,"h12":8,"h15":8,"wt":220,"tests":"4 km time trial, full effort","notes":"Recovery after"},{"wk":37,"mon":"2027-06-21","phase":"Race-specific","type":"Build","focus":"Full 3-4 km race-pace efforts with a lap schedule. 2 national-calendar races as rehearsals only. Protect recovery after each.","h10":9.5,"gym":0.75,"h12":10.5,"h15":11,"wt":220,"tests":null,"notes":null},{"wk":38,"mon":"2027-06-28","phase":"Race-specific","type":"Race","focus":"Full 3-4 km race-pace efforts with a lap schedule. 2 national-calendar races as rehearsals only. Protect recovery after each.","h10":8,"gym":0.5,"h12":8,"h15":8,"wt":220,"tests":"Race rehearsal #1 (pick from 2027 national calendar)","notes":"Mini-taper 3 days before; easy week after"},{"wk":39,"mon":"2027-07-05","phase":"Race-specific","type":"Build","focus":"Full 3-4 km race-pace efforts with a lap schedule. 2 national-calendar races as rehearsals only. Protect recovery after each.","h10":9.5,"gym":0.75,"h12":10.5,"h15":11,"wt":220,"tests":null,"notes":null},{"wk":40,"mon":"2027-07-12","phase":"Race-specific","type":"Build","focus":"Full 3-4 km race-pace efforts with a lap schedule. 2 national-calendar races as rehearsals only. Protect recovery after each.","h10":9.5,"gym":0.75,"h12":10.5,"h15":11,"wt":220,"tests":null,"notes":null},{"wk":41,"mon":"2027-07-19","phase":"Race-specific","type":"Race","focus":"Full 3-4 km race-pace efforts with a lap schedule. 2 national-calendar races as rehearsals only. Protect recovery after each.","h10":8,"gym":0.5,"h12":8,"h15":8,"wt":220,"tests":"Race rehearsal #2","notes":"Last race before Nationals"},{"wk":42,"mon":"2027-07-26","phase":"Race-specific","type":"Recovery","focus":"Full 3-4 km race-pace efforts with a lap schedule. 2 national-calendar races as rehearsals only. Protect recovery after each.","h10":7,"gym":0.5,"h12":7.5,"h15":7.5,"wt":220,"tests":null,"notes":"Recovery"},{"wk":43,"mon":"2027-08-02","phase":"Taper","type":"Taper","focus":"Volume down 40-60%, keep 2 short race-pace sessions per week, last hard session 4-5 days out, opener the day before.","h10":8,"gym":0.5,"h12":8.5,"h15":9,"wt":220,"tests":null,"notes":null},{"wk":44,"mon":"2027-08-09","phase":"Taper","type":"Taper","focus":"Volume down 40-60%, keep 2 short race-pace sessions per week, last hard session 4-5 days out, opener the day before.","h10":6,"gym":0.5,"h12":6.5,"h15":6.5,"wt":220,"tests":null,"notes":null},{"wk":45,"mon":"2027-08-16","phase":"Taper","type":"Race","focus":"Race week: Mon easy 45, Tue 2 x 1 km at target + 2 starts, Wed easy/travel, Thu opener, race.","h10":4.5,"gym":0,"h12":4.5,"h15":4.5,"wt":220,"tests":"ELITE TRACK NATIONALS (date TBC)","notes":"In 2026 the IP was day 2. No omnium the day before."}],"wt":{"start":[245,"2026-10-12"],"mid":[225,"2027-02-28"],"goal":[220,"2027-05-02"]},"tmpl":{"Base 1":[{"day":"Mon","pr":"A","name":"Gym A: lower","min":60,"detail":"Back squat 4x6 -> 4x5 RPE7-8, RDL 3x8, Bulgarian split squat 3x8, calf raise, side plank."},{"day":"Tue","pr":"A","name":"Sweet spot -> threshold","min":90,"detail":"Progress 3x12 SS -> 2x15 SS -> 2x20 SS -> 3x12 @ 95-100% FTP. 95-105 rpm. Z2 to fill."},{"day":"Wed","pr":"B","name":"Gym B + easy spin","min":90,"detail":"Hex bar 4x5, step-ups, hip thrust, row, pull-ups, core (60) + 30 min Z1-Z2 spin."},{"day":"Thu","pr":"A","name":"CX race or VO2","min":60,"detail":"CX race until season ends (mid-Dec): race 1 hard (HR 155+ from lap 2, first lap not the fastest), race 2 easy. Else 5x3 -> 6x3 min Z5, 3 min easy."},{"day":"Fri","pr":"C","name":"Recovery spin","min":45,"detail":"Z1, 95-100 rpm. Skip if tired."},{"day":"Sat","pr":"A","name":"Long Z2","min":150,"detail":"Steady Z2 with 6 x 10 s seated big-gear accelerations. Indoors: cap at 2 h and move the rest to Sun or split into AM/PM."},{"day":"Sun","pr":"B","name":"Z2 + cadence","min":105,"detail":"5 x 6 min in Z2 at 100-120 rpm."}],"Base 2 / Strength":[{"day":"Mon","pr":"A","name":"Gym A: max strength","min":60,"detail":"Back squat 5x3-5 @ ~85% 1RM, RDL 3x6, heavy split squat 3x6, core."},{"day":"Tue","pr":"A","name":"Threshold at cadence","min":90,"detail":"3 x 12-15 min @ 95-100% FTP at 100-110 rpm. Z2 to fill."},{"day":"Wed","pr":"B","name":"Gym B + easy spin","min":90,"detail":"Hex bar 4x3-5 heavy, step-ups, hip thrust, row/pull-ups (60) + 30 min spin."},{"day":"Thu","pr":"A","name":"VO2 at pursuit duration","min":60,"detail":"4-5 x 4 min @ 85-92% of 4-min test power, 4 min easy. Seated, 100-110 rpm, aero if possible."},{"day":"Fri","pr":"C","name":"Recovery spin","min":45,"detail":"Z1."},{"day":"Sat","pr":"A","name":"Long Z2 + starts","min":150,"detail":"Z2. 6 x 10 s standing starts on dry quiet road (fixed/single-speed); if wet, 6 x 10 s max seated torque efforts at 50-60 rpm on the trainer."},{"day":"Sun","pr":"B","name":"Z2 + high cadence + tempo","min":105,"detail":"Z2 with 4 x 5 min at 115-125 rpm and 2 x 8 min Z3."}],"Build 1":[{"day":"Mon","pr":"A","name":"Gym: power","min":50,"detail":"Back squat 4x3 @ 80% moving fast, then jump squats or box jumps 4x3 (contrast). RDL 3x5."},{"day":"Tue","pr":"A","name":"Pursuit-pace reps","min":75,"detail":"Progress: 2 sets of 4 x 1 min @ 103-110% of 4-min power (1 min easy) -> 4 x 2 min -> 3 x 3 min @ pursuit pace. 105-112 rpm (60x16 at 4:45 pace = ~109 rpm)."},{"day":"Wed","pr":"B","name":"Z2 + gym B maintenance","min":100,"detail":"60 min Z2 + 40 min gym (hex bar 3x3, step-ups, core)."},{"day":"Thu","pr":"A","name":"Threshold at race cadence","min":75,"detail":"3 x 10 min @ 100-105% FTP at 105-115 rpm."},{"day":"Fri","pr":"C","name":"Recovery spin","min":30,"detail":"Z1."},{"day":"Sat","pr":"A","name":"Fixed-gear hills","min":150,"detail":"Warm-up 30 min. 6 x 10 s uphill standing starts, full recovery. Then 3-5 x 5-7 min climbs at pursuit effort (RPE 9), seated then standing last minute; easy descents with brakes. Z2 home."},{"day":"Sun","pr":"B","name":"Z2","min":120,"detail":"Steady Z2, 95-105 rpm."}],"Track transition":[{"day":"Mon","pr":"B","name":"Gym: maintenance","min":45,"detail":"Squat 3x3 fast, jumps 3x3, core. Keep strength, avoid soreness."},{"day":"Tue","pr":"A","name":"Track A: starts + 1 km reps","min":120,"detail":"4-6 standing starts (first 125 m) in race gear. Weeks 30-31: compare 60x16 (101 in) with 62x16 (105 in) on 2 x 1 km each at target split; keep the gear with the better 200 m splits and start. 3-4 x 1 km at target 200 m split (13.9-14.0 s), 10 min easy between. Position check on video."},{"day":"Wed","pr":"B","name":"Z2","min":60,"detail":"Easy trainer or road."},{"day":"Thu","pr":"A","name":"Trainer VO2 or Track B","min":75,"detail":"Track: 2 x 2 km at target split. No track: 5 x 3 min @ pursuit pace."},{"day":"Fri","pr":"C","name":"Recovery spin","min":45,"detail":"Z1."},{"day":"Sat","pr":"A","name":"Track or fixed hills","min":120,"detail":"Track: 3 km at target split (from wk 34). Otherwise fixed-gear hills as Build 1."},{"day":"Sun","pr":"B","name":"Z2","min":120,"detail":"Outdoor Z2."}],"Race-specific":[{"day":"Mon","pr":"B","name":"Rest or gym maintenance","min":40,"detail":"Gym only in non-race weeks."},{"day":"Tue","pr":"A","name":"Track: race simulation","min":120,"detail":"3 km at target split, or 4 km sim every other week. Lap board / splits called."},{"day":"Wed","pr":"B","name":"Z2","min":60,"detail":"Easy."},{"day":"Thu","pr":"A","name":"Pacing reps","min":75,"detail":"4 x 2 min @ 105% of 4-min power, or 6 x 500 m from standing start."},{"day":"Fri","pr":"B","name":"Opener","min":45,"detail":"Z2 + 3 x 1 min pursuit pace + 2 x 10 s."},{"day":"Sat","pr":"A","name":"Race or 4 km TT","min":120,"detail":"Race weeks: race. Other weeks: Z2 2 h."},{"day":"Sun","pr":"B","name":"Z2 recovery","min":90,"detail":"Easy."}],"Taper":[{"day":"Mon","pr":"B","name":"Easy / rest","min":45,"detail":"Z1-Z2."},{"day":"Tue","pr":"A","name":"Race pace, short","min":75,"detail":"Wk 43: 3 x 1 km at target. Wk 44: 2 x 1 km + 2 starts."},{"day":"Wed","pr":"B","name":"Z2","min":60,"detail":"Easy."},{"day":"Thu","pr":"A","name":"Short sharp","min":60,"detail":"2 x 2 min pursuit pace + 3 starts."},{"day":"Fri","pr":"C","name":"Rest","min":0,"detail":null},{"day":"Sat","pr":"A","name":"Last hard session (wk 43-44)","min":90,"detail":"1 x 2 km at target split. Never in race week."},{"day":"Sun","pr":"B","name":"Z2","min":90,"detail":"Easy."}]},"zones":[{"name":"Z1 Recovery","lo":0,"hi":157,"base":"FTP","use":"Recovery spins, warm-ups"},{"name":"Z2 Endurance","lo":160,"hi":215,"base":"FTP","use":"Most of the week. Where weight loss and aerobic base come from"},{"name":"Z3 Tempo","lo":217,"hi":249,"base":"FTP","use":"Tempo blocks"},{"name":"Sweet spot","lo":252,"hi":269,"base":"FTP","use":"Base-phase threshold building"},{"name":"Z4 Threshold","lo":272,"hi":300,"base":"FTP","use":"Threshold intervals"},{"name":"Z5 VO2max","lo":315,"hi":352,"base":"4-min","use":"3-5 min intervals. Keyed to 4-min test power (changed 20 Oct: FTP-based range was far too easy for his profile)"},{"name":"Z6 Anaerobic","lo":407,"hi":518,"base":"4-min","use":"30 s - 2 min"},{"name":"Pursuit pace","lo":359,"hi":377,"base":"4-min","use":"Race-pace work. Based on 4-min test power, not FTP"},{"name":"Pursuit overspeed","lo":381,"hi":407,"base":"4-min","use":"Short reps above race pace"}],"nums":{"ftp":286,"p4":370,"cp":284,"wp":20.6,"p20":301.5},"gears":[[58,16,97.9,7.6,106,109,113],[60,16,101.3,7.86,102,105,109],[62,16,104.6,8.12,99,102,106],[63,16,106.3,8.25,98,100,104],[60,15,108,8.38,96,99,103]],"grid":[[296,407,437,467,498],[285,455,490,524,558],[280,480,517,553,589]],"tests":[{"when":"Feb-Mar 2026 (reference)","block":"GC export","p5":713,"p60":532,"p4":297,"cad":null,"p20":248,"ftp":236,"cp":236,"wp":14.6,"note":"Best efforts in training rides, not tests. Shown as the format to follow. Weight assumed = current."},{"when":"20 Oct / 24 Oct 2026","block":"Return wk 2","p5":956,"p60":398,"p4":370,"cad":103,"p20":301.5,"ftp":286,"cp":284,"wp":20.6,"note":"Test B 24 Oct: 20-min 301.5 W, well paced, last 2.5 min 329 W; the 5-min opener was ~315 W (guide said ~280), so 301.5 is if anything slightly low. Test A done 20 Oct, trainer, level mode. Even pacing (348-375 W per 30 s), last 30 s 421 W: probably 5-10 W left. Peak 1,002 W. 1-min best is inside the 4-min. Weight not logged: 245 is the start value."},{"when":"29 Dec / 2 Jan","block":"End Base 1","p5":null,"p60":null,"p4":null,"cad":null,"p20":null,"ftp":null,"cp":null,"wp":null,"note":null},{"when":"23 Feb / 27 Feb","block":"End Base 2","p5":null,"p60":null,"p4":null,"cad":null,"p20":null,"ftp":null,"cp":null,"wp":null,"note":null},{"when":"20 Apr / 24 Apr","block":"End Build 1","p5":null,"p60":null,"p4":null,"cad":null,"p20":null,"ftp":null,"cp":null,"wp":null,"note":"Last trainer test before track"},{"when":"Week of 7 Jun","block":"Track","p5":null,"p60":null,"p4":null,"cad":null,"p20":null,"ftp":null,"cp":null,"wp":null,"note":"3 km at target split; note 200 m splits"},{"when":"Week of 14 Jun","block":"Track","p5":null,"p60":null,"p4":null,"cad":null,"p20":null,"ftp":null,"cp":null,"wp":null,"note":"4 km time trial"}],"reviews":[{"date":"2026-11-09","period":"CX review","changes":"Thursday CX now has targets: race 1 is the session, first lap no faster than the average of the others, HR 155+ from lap 2, lap-average 150+; race 2 easy or skip. It counts as the week's VO2 only if those are hit. Week 8 (recovery): one race only. Gear: keep 40x20; its ~60 rpm race cadence is useful torque work."},{"date":"2026-11-09","period":"Illness + gym update","changes":"All past gym days marked done. Week 5 Thursday is now easy Z2 (no CX race, no VO2): after a fever, high intensity waits until fully symptom-free. Tuesday sweet spot is 2 x 12 with a third rep only if he feels normal, plus a heart-rate stop rule. Week 5 total stays 8.25 h. Week 6 Thursday VO2 starts at 5x3 if he's not fully back."},{"date":"2026-11-09","period":"Wk 2 Sun - Wk 4","changes":"Calendar now runs day by day to 6 Dec (Base 1 weeks 5-8); Season hours for weeks 5-8 read from it. Week 5 is a re-entry week: 8.25 h, SS 3x12 repeated, Thursday VO2 only if 5+ days symptom-free, and the missed long ride with standing starts on Saturday. Weeks 6-7 at ~10 h (SS 2x15 -> 2x20, VO2 6x3, long Z2 150 min). Week 7: VO2 moved to Friday for Thanksgiving. Week 8 recovery (7 h). Trainer Z2 rides now say: ERG at ~175 W. Cadence blocks now 105-120 rpm. Your Calendar notes for 31 Oct - 6 Nov are kept word for word, with file data added."},{"date":"2026-10-26","period":"2021 power back-calc","changes":"No plan change. Gear stays 60x16 baseline with a 62x16 trial in weeks 30-31. Biggest unknown is still CdA: it decides whether 4:45 needs ~450 or ~520 W. Priority for spring: one track session with power to measure it."},{"date":"2026-10-26","period":"Gearing","changes":"Gear table added to Zones (inputs: rollout, ring, cog). Pursuit-pace trainer sessions now target 105-112 rpm instead of 105-115, to match 101 in at 4:45 pace. Track transition weeks 30-31: compare 60x16 with 62x16 (105 in). No change to the gear assumption: 101 in is the baseline."},{"date":"2026-10-24","period":"Wk 2 Wed-Sat","changes":"Zones!B4 = 301.5, so FTP in use = 286 W. Every FTP-based target moves up ~22%: Z2 160-215 W (was 132-176), sweet spot 252-269, threshold 272-300. Easy rides so far averaged ~106-127 W, now 35-55 W under Z2. From week 3, ride Z2 at 160-185 W, HR roughly 115-135 as a cross-check (estimate, not tested). VO2 and pursuit-pace zones unchanged (based on 4-min). Model gap to 4:45 unchanged (also based on 4-min). Overview corrected: the 290 W estimate was close, and the July zones were fine."},{"date":"2026-10-20","period":"Wk 1 + Wk 2 Mon-Tue","changes":"Zones!B5 = 370 W, so pursuit pace is now 359-377 W. VO2 (Z5) and anaerobic (Z6) now key off 4-min power instead of FTP: Z5 is 315-352 W (it was 249-282 W, far too easy). Week 3 Thu VO2 5x3 uses the new range. Test B (Sat 24 Oct): pacing guide added, start at ~265 W. FTP stays 235 W until Test B, then switches automatically. Week 3 Sunday cadence session: note added to hit the cadence targets. Goal stays 4:45, but position/aero is now a priority (see Overview)."}],"seed":{"log":{"2026-10-12":{"status":"done","note":"Gym done (confirmed 9 Nov).","session":"Gym Intro A: Lower","updated":1},"2026-10-13":{"status":"done","note":"75 min trainer, 106 W avg, HR 98. Mostly below Z2.","session":"Endurance Z2 + spin-ups","updated":1},"2026-10-14":{"status":"done","note":"Gym done + 30 min easy ride.","session":"Gym Intro B: Posterior/Upper","updated":1},"2026-10-15":{"status":"done","note":"CX race, 37 min, HR 131 avg.","session":"CX race OR Tempo 3x10","updated":1},"2026-10-17":{"status":"done","note":"120 min trainer, NP 158 W, 4 accelerations.","session":"Long Z2 + seated accelerations","updated":1},"2026-10-18":{"status":"partial","note":"90 min, cadence blocks mostly 78-88 rpm instead of 95-115.","session":"Z2 + cadence ladder","updated":1},"2026-10-19":{"status":"done","note":"Gym done.","session":"Gym A: Lower","updated":1},"2026-10-20":{"status":"done","rpe":10,"note":"Test A: 4-min 370 W, 103 rpm. Peak 1,002 W.","session":"TEST A: sprint + 4-min max","updated":1},"2026-10-21":{"status":"done","note":"Gym done.","session":"Gym B: Posterior/Upper (light)","updated":1},"2026-10-22":{"status":"done","note":"60 min outdoors, HR 112 avg.","session":"Easy Z2 (no CX this week)","updated":1},"2026-10-24":{"status":"done","rpe":10,"note":"Test B: 20-min 301.5 W. FTP 286 W.","session":"TEST B: 20-min","updated":1},"2026-10-25":{"status":"done","note":"120 min trainer, NP 166 W.","session":"Easy Z2","updated":1},"2026-10-26":{"status":"done","note":"Gym done.","session":"Gym A: Lower","updated":1},"2026-10-27":{"status":"partial","note":"SS 3x12: ~255 / ~248 / ~229 W. Rep 3 faded.","session":"Sweet spot 3x12","updated":1},"2026-10-28":{"status":"done","note":"Gym done.","session":"Gym B: Posterior/Upper","updated":1},"2026-10-29":{"status":"done","note":"CX, two races, lap HR 129-142 avg.","session":"CX race OR VO2 5x3","updated":1},"2026-10-31":{"status":"sick","note":"Sick, long ride not done. Rode the cadence session instead (61 min, 101-110 rpm).","session":"Long Z2 + 4 standing starts","updated":1},"2026-11-01":{"status":"done","note":"Complete (per you).","session":"Z2 + cadence blocks","updated":1},"2026-11-02":{"status":"done","note":"Complete.","session":"Gym A (light)","updated":1},"2026-11-03":{"status":"done","note":"Tempo reps ~251 / ~228 / ~235 W.","session":"Z2 + 3x5 tempo","updated":1},"2026-11-04":{"status":"sick","note":"Sick (cold, light fever).","session":"Gym B (light)","updated":1},"2026-11-05":{"status":"sick","note":"Sick.","session":"CX race OR easy Z2","updated":1},"2026-11-07":{"status":"done","note":"90 min, NP 183 W, 4 accelerations.","session":"Z2 + 4 seated accelerations","updated":1},"2026-11-08":{"status":"done","note":"75 min, NP 173 W. First 30 min solid Z2.","session":"Easy Z2","updated":1}},"weight":{"2026-10-12":{"lb":245,"updated":1}}}}</script>
+<script>
+(function(){
+let P=JSON.parse(document.getElementById('plan').textContent);
+const LS='ip4k.v1', LSP='ip4k.plan', LSX='ip4k.export';
+const NATIVE=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
+const REMOTE=(!NATIVE&&/github\.io$/.test(location.hostname))?'plan.json':'https://n-p-martinez.github.io/ip_plan/plan.json';
+try{const cp=JSON.parse(localStorage.getItem(LSP)||'null');if(cp&&cp.version>P.version)P=cp}catch(e){}
+const START='2026-10-12', RACE_WEEK='2027-08-16';
+const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DOWL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const pad=n=>String(n).padStart(2,'0');
+const ds=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const pd=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
+const add=(s,n)=>{const d=pd(s);d.setDate(d.getDate()+n);return ds(d)};
+const diff=(a,b)=>Math.round((pd(b)-pd(a))/864e5);
+const nice=s=>{const d=pd(s);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]};
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let today=ds(new Date());
+let calBy={};function indexPlan(){calBy={};P.cal.forEach(r=>calBy[r.date]=r)}indexPlan();
+const wkOf=s=>Math.floor(diff(START,s)/7)+1;
+const monOf=s=>{const d=pd(s);const k=(d.getDay()+6)%7;return add(s,-k)};
+const seasonWk=w=>P.season[Math.min(Math.max(w,1),P.season.length)-1];
+const tmplKey=ph=>Object.keys(P.tmpl).find(k=>ph&&ph.indexOf(k)===0)||null;
+
+function session(s){
+  const b=baseSession(s), o=st.over[s];
+  if(!o) return b;
+  return Object.assign({}, b||{wk:'Wk '+wkOf(s)}, o, {changed:true, planName:b?b.name:''});
+}
+function baseSession(s){
+  if(calBy[s]){const r=calBy[s];return {src:'cal',wk:r.wk,pr:r.pr,type:r.type,name:r.name,min:r.min,target:r.target,cad:r.cad,detail:r.detail,tag:r.tag,note:r.note}}
+  const w=wkOf(s); if(w<1||w>P.season.length) return null;
+  const sw=seasonWk(w), k=tmplKey(sw.phase); const day=DOW[pd(s).getDay()];
+  const t=k&&P.tmpl[k].find(x=>x.day===day);
+  if(!t) return {src:'tmpl',wk:'Wk '+w+' ('+sw.phase+')',pr:'',type:'',name:sw.type+' week',min:null,detail:sw.focus,note:''};
+  const rec=/Recovery/.test(sw.type);
+  return {src:'tmpl',wk:'Wk '+w+' ('+sw.phase+')',pr:t.pr,type:/Gym|gym/.test(t.name)?'Strength':'Bike',name:t.name,
+    min:t.min?Math.round(t.min*(rec?0.7:1)):0,target:'',cad:'',detail:t.detail,tag:'',
+    note:(rec?'Recovery week: about 70% of the usual time, one short quality session, light gym. ':'')+'Typical '+k+' session. The exact day is written after the block review.'};
+}
+function wtTarget(s){
+  const a=P.wt.start,b=P.wt.mid,c=P.wt.goal;
+  if(s<=b[1]) return a[0]-(a[0]-b[0])*diff(a[1],s)/diff(a[1],b[1]);
+  if(s<=c[1]) return b[0]-(b[0]-c[0])*diff(b[1],s)/diff(b[1],c[1]);
+  return c[0];
+}
+
+// ---- state + store
+const st={date:today,weekMon:monOf(today),log:{},weight:{},over:{},stored:true,editing:false,dirty:false};
+function loadStore(){
+  let d=null;
+  try{d=JSON.parse(localStorage.getItem(LS)||'null')}catch(e){st.stored=false}
+  if(!d){d={log:P.seed?P.seed.log:{},weight:P.seed?P.seed.weight:{},over:{}};st.log=d.log;st.weight=d.weight;st.over=d.over;persist();return}
+  st.log=d.log||{};st.weight=d.weight||{};st.over=d.over||{};
+}
+function persist(){
+  try{localStorage.setItem(LS,JSON.stringify({log:st.log,weight:st.weight,over:st.over,savedAt:Date.now()}));st.stored=true;return true}
+  catch(e){st.stored=false;return false}
+}
+
+function route(){
+  let h=(location.hash||'').replace('#','');
+  if(!['day','week','season','numbers'].includes(h)) h='day';
+  document.querySelectorAll('nav.tabs a').forEach(a=>a.setAttribute('aria-current',a.dataset.tab===h?'page':'false'));
+  render(h);
+}
+function hdr(){
+  const w=wkOf(today), sw=seasonWk(w);
+  document.getElementById('hdrWeek').textContent= w>=1&&w<=P.season.length ? 'Wk '+w : '';
+  const n=diff(today,RACE_WEEK); document.getElementById('hdrCount').textContent= n>0 ? Math.ceil(n/7)+' wks to Nationals' : 'Race week';
+}
+
+function render(view){
+  const el=document.getElementById('app');
+  if(view==='day') el.innerHTML=vDay();
+  if(view==='week') el.innerHTML=vWeek();
+  if(view==='season') el.innerHTML=vSeason();
+  if(view==='numbers') el.innerHTML=vNumbers();
+  wire(view);
+  window.scrollTo(0,0);
+}
+let current='day';
+function rerender(){ // keep form input while store updates arrive
+  const a=document.activeElement; if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)) return;
+  render(current);
+}
+
+function chips(x){
+  let h='';
+  if(x.pr) h+='<span class="chip '+esc(x.pr)+'">'+(x.pr==='A'?'Core':x.pr==='B'?'If possible':x.pr==='C'?'Optional':esc(x.pr))+'</span>';
+  if(x.type==='Test') h+='<span class="chip test">Test</span>';
+  if(/Recovery/.test(x.wk||'')) h+='<span class="chip rec">Recovery wk</span>';
+  if(x.changed) h+='<span class="chip chg">Changed</span>';
+  return h;
+}
+function banner(){
+  if(!st.stored) return '<div class="banner">This browser isn\'t keeping your entries (private mode or storage blocked). Use the installed app.</div>';
+  let last=0;try{last=+localStorage.getItem(LSX)||0}catch(e){}
+  const n=Object.keys(st.log).length;
+  if(n>30&&Date.now()-last>14*864e5) return '<div class="banner">Your log only lives on this phone. <a href="#numbers" style="color:var(--blue);font-weight:600">Export a backup</a>.</div>';
+  return '';
+}
+
+function vDay(){
+  const s=st.date, x=session(s), lg=st.log[s]||{}, wt=st.weight[s];
+  const isToday=s===today;
+  let h='<div class="daynav"><button class="iconbtn" data-nav="-1" aria-label="Previous day"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>'+
+    '<div class="mid"><div class="eyebrow">'+(isToday?'Today':(diff(today,s)===1?'Tomorrow':(diff(today,s)===-1?'Yesterday':'')))+'</div><div style="font-family:var(--f-display);font-weight:700;font-size:22px">'+DOWL[pd(s).getDay()]+' '+pd(s).getDate()+' '+MON[pd(s).getMonth()]+'</div>'+
+    (isToday?'':'<button class="linkbtn" data-today>Back to today</button>')+'</div>'+
+    '<button class="iconbtn" data-nav="1" aria-label="Next day"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>';
+  h+='<div class="stack">'+banner();
+  if(!x){h+='<div class="card">Outside the season plan.</div></div>';return h}
+  const rest=x.type==='Rest';
+  h+='<article class="card session"><div class="top"><div style="min-width:0"><div class="eyebrow">'+esc(x.wk)+(x.tag?' · '+esc(x.tag):'')+'</div><h1>'+esc(x.name)+'</h1></div><div class="row" style="justify-content:flex-end">'+chips(x)+'</div></div>';
+  if(!rest){
+    h+='<div class="facts"><div><b>'+(x.min?x.min+' min':'–')+'</b><span>Duration</span></div><div><b>'+(x.target&&x.target!=='N/A'?esc(x.target):'–')+'</b><span>'+(x.type==='Strength'?'Load':'Watts')+'</span></div><div><b>'+(x.cad&&x.cad!=='N/A'?esc(x.cad):'–')+'</b><span>Cadence</span></div></div>';
+  }
+  if(x.detail) h+='<div class="detail">'+esc(x.detail)+'</div>';
+  if(x.why) h+='<div class="coach"><div class="eyebrow">Your change</div>'+esc(x.why)+'</div>';
+  if(x.note) h+='<div class="coach"><div class="eyebrow">Coach notes</div>'+esc(x.note)+'</div>';
+  if(x.changed&&x.planName&&x.planName!==x.name) h+='<div class="note" style="margin-top:10px">Planned: '+esc(x.planName)+'</div>';
+  h+='<div class="btnrow" style="margin-top:12px"><button class="btn ghost" id="editBtn">'+(st.editing?'Close':'Change this session')+'</button>'+(x.changed?'<button class="btn ghost" id="resetBtn">Back to plan</button>':'')+'</div>';
+  h+='</article>';
+  if(st.editing){
+    h+='<section class="card stack" aria-label="Change this session"><div class="eyebrow">Change this day</div>'+
+     '<div><label for="eName">Session</label><input id="eName" value="'+esc(x.name||'')+'"></div>'+
+     '<div class="three"><div><label for="eMin">Minutes</label><input id="eMin" inputmode="numeric" value="'+esc(x.min||'')+'"></div><div><label for="eTgt">Watts</label><input id="eTgt" value="'+esc(x.target&&x.target!=='N/A'?x.target:'')+'"></div><div><label for="eCad">Cadence</label><input id="eCad" value="'+esc(x.cad&&x.cad!=='N/A'?x.cad:'')+'"></div></div>'+
+     '<div><label for="eDet">Workout</label><textarea id="eDet">'+esc(x.detail||'')+'</textarea></div>'+
+     '<div><label for="eWhy">Why it changed</label><input id="eWhy" placeholder="e.g. swapped with Thursday, raining" value="'+esc((st.over[s]||{}).why||'')+'"></div>'+
+     '<div class="row" style="justify-content:flex-end"><button class="btn" id="eSave">Save change</button></div></section>';
+  }
+  // log
+  const dis='';
+  h+='<section class="card stack" aria-label="Log this day"><div class="eyebrow">Log</div><div class="seg" role="group" aria-label="How did it go">'+
+    [['done','Done'],['partial','Partly'],['skipped','Skipped'],['sick','Sick']].map(([k,l])=>'<button data-s="'+k+'" aria-pressed="'+(lg.status===k)+'"'+dis+'>'+l+'</button>').join('')+'</div>'+
+    '<div class="three"><div><label for="rpe">RPE</label><select id="rpe"><option value="">–</option>'+[1,2,3,4,5,6,7,8,9,10].map(n=>'<option'+(lg.rpe==n?' selected':'')+'>'+n+'</option>').join('')+'</select></div>'+
+    '<div><label for="amin">Actual min</label><input id="amin" inputmode="numeric" placeholder="'+(x.min||'')+'" value="'+(lg.min?esc(lg.min):'')+'"></div>'+
+    '<div><label for="wt">Weight (lb)</label><input id="wt" inputmode="decimal" placeholder="241.4" value="'+(wt&&wt.lb?esc(wt.lb):'')+'"></div></div>'+
+    '<div><label for="note">Notes: how it felt, what you changed, gym loads</label><textarea id="note"'+dis+'>'+esc(lg.note||'')+'</textarea></div>'+
+    '<div class="row" style="justify-content:space-between"><span class="status" id="saveStatus">'+(lg.updated?'Saved '+new Date(lg.updated).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'')+'</span><button class="btn" id="save">Save</button></div>'+
+    '<div class="note">Weight target today: <span class="num">'+wtTarget(s).toFixed(1)+' lb</span>'+avgLine(s)+'</div></section>';
+  // next days
+  h+='<section><h2>Coming up</h2><div class="card mini">';
+  for(let i=1;i<=3;i++){const d=add(s,i),y=session(d); if(!y) continue; h+=miniRow(d,y)}
+  h+='</div></section></div>';
+  return h;
+}
+function avgLine(s){
+  const v=[];for(let i=0;i<7;i++){const w=st.weight[add(s,-i)];if(w&&+w.lb)v.push(+w.lb)}
+  return v.length?' · 7-day average <span class="num">'+(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1)+' lb</span>':'';
+}
+function miniRow(d,y){
+  const lg=st.log[d];
+  return '<a href="#day" data-go="'+d+'" class="'+(d===today?'today':'')+'"><span class="d">'+DOW[pd(d).getDay()]+'<b>'+pd(d).getDate()+'</b></span><span class="n"><div>'+esc(y.name)+'</div><small>'+(y.min?y.min+' min':'')+(y.target&&y.target!=='N/A'&&y.target!==''?' · '+esc(y.target)+' W':'')+({A:' · core',B:' · if possible',C:' · optional'}[y.pr]||'')+'</small></span><span class="dot '+(lg?esc(lg.status):'')+'" title="'+(lg?esc(lg.status):'not logged')+'"></span></a>';
+}
+
+function vWeek(){
+  const m=st.weekMon, w=wkOf(m), sw=seasonWk(w);
+  let h='<div class="daynav"><button class="iconbtn" data-wk="-7" aria-label="Previous week"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><div class="mid"><div class="eyebrow">Week '+w+' · '+esc(sw?sw.type:'')+'</div><div style="font-family:var(--f-display);font-weight:700;font-size:22px">'+nice(m)+' – '+nice(add(m,6))+'</div>'+(monOf(today)===m?'':'<button class="linkbtn" data-thisweek>This week</button>')+'</div><button class="iconbtn" data-wk="7" aria-label="Next week"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>';
+  let plan=0,core=0,done=0,logged=0;
+  const rows=[];for(let i=0;i<7;i++){const d=add(m,i),y=session(d);if(!y)continue;rows.push([d,y]);plan+=+y.min||0;if(y.pr==='A')core+=+y.min||0;const lg=st.log[d];if(lg&&(lg.status==='done'||lg.status==='partial')){done+=+(lg.min||y.min)||0}if(lg)logged++}
+  h+='<div class="stack">'+banner()+'<div class="card"><div class="weekhead"><div><div class="eyebrow">'+esc(sw?sw.phase:'')+'</div><div style="font-weight:600">'+esc(sw?sw.focus:'')+'</div></div></div>'+
+    '<div class="facts"><div><b>'+(plan/60).toFixed(1)+' h</b><span>Planned</span></div><div><b>'+(core/60).toFixed(1)+' h</b><span>Core</span></div><div><b>'+(done/60).toFixed(1)+' h</b><span>Done</span></div></div>'+
+    '<div class="bar" style="margin-top:12px" role="img" aria-label="Done versus planned"><i style="width:'+(plan?Math.min(100,done/plan*100):0)+'%"></i></div>'+
+    (sw&&sw.tests?'<div class="coach"><div class="eyebrow">Tests / races</div>'+esc(sw.tests)+'</div>':'')+'</div>';
+  h+='<div class="card mini">'+rows.map(([d,y])=>miniRow(d,y)).join('')+'</div>';
+  h+='<p class="note">Done counts your actual minutes, or the planned minutes if you left them blank, for sessions marked Done or Partly. Tap a day to see the session and log it.</p></div>';
+  return h;
+}
+
+function vSeason(){
+  const nowW=wkOf(today);
+  let h='<div class="stack">'+banner()+'<div><div class="eyebrow">Elite Track Nationals 2027 · date TBC, assumed week of 16 Aug</div><h1>4:45 for 4 km</h1><p class="muted" style="margin:6px 0 0">10 h a week including two gym sessions. 245 to 220 lb by May, for health.</p></div>';
+  h+='<div class="card chart"><div class="eyebrow">Weight: target and your 7-day average</div>'+wtChart()+'</div>';
+  const phases=[];P.season.forEach(r=>{let p=phases[phases.length-1];if(!p||p.name!==r.phase){p={name:r.phase,rows:[]};phases.push(p)}p.rows.push(r)});
+  phases.forEach(p=>{
+    h+='<section class="phase"><h3><span>'+esc(p.name)+'</span><span class="muted num" style="font-size:13px;font-family:var(--f-num)">'+nice(p.rows[0].mon)+'</span></h3><div>';
+    p.rows.forEach(r=>{
+      const cls=r.wk===nowW?'wk now':'wk';
+      const c=/Recovery/.test(r.type)?'rec':/Race/.test(r.type)?'race':/Test/.test(r.type)||(r.tests||'').indexOf('Test')===0?'test':'';
+      h+='<div class="'+cls+'" id="w'+r.wk+'"><span class="num muted">'+r.wk+'</span><span class="num" style="font-size:13px">'+pd(r.mon).getDate()+' '+MON[pd(r.mon).getMonth()]+'</span><span class="t"><div>'+(c?'<span class="chip '+c+'" style="margin-right:6px">'+esc(r.type)+'</span>':esc(r.type))+'</div>'+(r.tests?'<small>'+esc(r.tests)+'</small>':'')+'</span><span class="num" style="text-align:right">'+(+r.h10).toFixed(1)+' h<br><small class="muted">'+(+r.wt).toFixed(0)+' lb</small></span></div>';
+    });
+    h+='</div></section>';
+  });
+  h+='<p class="note">Hours are the 10 h plan (gym included). Pounds are the weight-trend target at the start of each week.</p></div>';
+  return h;
+}
+function wtChart(){
+  const W=600,H=200,L=40,R=12,T=14,B=26;
+  const d0=P.wt.start[1], d1='2027-08-22', span=diff(d0,d1);
+  const y0=215,y1=250; const X=s=>L+(W-L-R)*diff(d0,s)/span, Y=v=>T+(H-T-B)*(y1-v)/(y1-y0);
+  let g='';
+  [220,230,240,250].forEach(v=>{g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--f-num)">'+v+'</text>'});
+  ['2026-11-01','2027-01-01','2027-03-01','2027-05-01','2027-07-01'].forEach(s=>{g+='<text x="'+X(s)+'" y="'+(H-8)+'" text-anchor="middle" font-size="11" fill="var(--muted)">'+MON[pd(s).getMonth()]+'</text>'});
+  const tp=[P.wt.start,P.wt.mid,P.wt.goal,[P.wt.goal[0],d1]].map(([v,s])=>X(s).toFixed(1)+','+Y(v).toFixed(1)).join(' ');
+  g+='<polyline points="'+tp+'" fill="none" stroke="var(--blue)" stroke-width="2" stroke-dasharray="5 4"/>';
+  const ks=Object.keys(st.weight).filter(k=>+st.weight[k].lb>0).sort();
+  if(ks.length){
+    const pts=ks.map(k=>{const v=[];for(let i=0;i<7;i++){const w=st.weight[add(k,-i)];if(w&&+w.lb)v.push(+w.lb)}return [k,v.reduce((a,b)=>a+b,0)/v.length]}).filter(([k])=>k>=d0&&k<=d1);
+    g+='<polyline points="'+pts.map(([k,v])=>X(k).toFixed(1)+','+Y(Math.min(y1,Math.max(y0,v))).toFixed(1)).join(' ')+'" fill="none" stroke="var(--red)" stroke-width="2.5"/>';
+    const [lk,lv]=pts[pts.length-1]; g+='<circle cx="'+X(lk)+'" cy="'+Y(lv)+'" r="4" fill="var(--red)"/><text x="'+(X(lk)+7)+'" y="'+(Y(lv)-7)+'" font-size="12" fill="var(--ink)" font-family="var(--f-num)">'+lv.toFixed(1)+'</text>';
+  }
+  const tx=X(today); if(tx>=L&&tx<=W-R) g+='<line x1="'+tx+'" x2="'+tx+'" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--ink)" stroke-width="1" opacity=".35"/>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Weight target line and logged 7-day average">'+g+'</svg>'+
+    '<div class="row note" style="margin-top:4px"><span><span class="zsw" style="background:var(--blue)"></span>Target</span><span><span class="zsw" style="background:var(--red)"></span>7-day average'+(ks.length?'':' (log a weight on the Day tab)')+'</span></div>';
+}
+
+function vNumbers(){
+  const n=P.nums;
+  let h='<div class="stack"><div class="tiles">'+
+    '<div class="tile"><b>'+n.ftp+'<small>W</small></b><span>FTP</span></div>'+
+    '<div class="tile"><b>'+n.p4+'<small>W</small></b><span>4-min power</span></div>'+
+    '<div class="tile"><b>'+n.cp+'<small>W</small></b><span>Critical power</span></div>'+
+    '<div class="tile"><b>'+n.wp+'<small>kJ</small></b><span>W′</span></div></div>'+
+    '<p class="note">From Test A (20 Oct, 4 min 370 W) and Test B (24 Oct, 20 min 301.5 W). Next tests: Tue 29 Dec and Sat 2 Jan.</p>';
+  const zc=['var(--muted)','var(--blue)','var(--ok)','var(--wood)','var(--warn)','var(--red)','var(--red)','var(--ink)','var(--ink)'];
+  h+='<h2>Zones</h2><div class="tw"><table><thead><tr><th>Zone</th><th class="n">Watts</th><th>Use</th></tr></thead><tbody>'+
+    P.zones.map((z,i)=>'<tr><td style="white-space:nowrap"><span class="zsw" style="background:'+zc[i]+'"></span>'+esc(z.name)+'</td><td class="n">'+(i===0?'&lt; '+z.hi:z.lo+'–'+z.hi)+'</td><td class="muted" style="font-size:13px">'+esc(String(z.use||'').split('. ')[0].replace(/\.$/,''))+(z.base==='4-min'?' (from 4-min power)':'')+'</td></tr>').join('')+'</tbody></table></div>';
+  h+='<h2>4:45 pacing</h2><div class="card"><div class="facts" style="margin-top:0"><div><b>~20.0 s</b><span>First 200 m</span></div><div><b>13.95 s</b><span>Each 200 m after</span></div><div><b>≥ 13.8 s</b><span>Never faster</span></div></div><p class="note" style="margin:10px 0 0">On 60x16 (101 in) that pace is about 109 rpm. In 2021 laps 2-4 were 13.8-14.0 s, then he settled at 14.9 s.</p></div>';
+  h+='<h2>Gears</h2><div class="tw"><table><thead><tr><th>Gear</th><th class="n">Inches</th><th class="n">rpm @ 14.9 s</th><th class="n">@ 4:56</th><th class="n">@ 4:45</th></tr></thead><tbody>'+
+    P.gears.map(g=>'<tr'+(g[0]===60&&g[1]===16?' class="hl"':'')+'><td class="num">'+g[0]+'x'+g[1]+(g[0]===60&&g[1]===16?' <span class="muted" style="font-family:var(--f-body);font-size:12px">2021</span>':'')+'</td><td class="n">'+g[2]+'</td><td class="n">'+g[4]+'</td><td class="n">'+g[5]+'</td><td class="n">'+g[6]+'</td></tr>').join('')+'</tbody></table></div><p class="note">Assumes a 2.096 m wheel rollout. 62x16 gets its trial on the track in weeks 30-31.</p>';
+  h+='<h2>Power for a time</h2><div class="tw"><table><thead><tr><th>Time</th><th class="n">CdA 0.22</th><th class="n">0.24</th><th class="n">0.26</th><th class="n">0.28</th></tr></thead><tbody>'+
+    P.grid.map(r=>{const t=r[0];return '<tr'+(t===285?' class="hl"':'')+'><td class="num">'+Math.floor(t/60)+':'+pad(t%60)+'</td>'+r.slice(1).map(v=>'<td class="n">'+v+' W</td>').join('')+'</tr>'}).join('')+'</tbody></table></div><p class="note">Average power indoors at 220 lb. A rough physics model for goal setting; CdA gets measured on the track in spring.</p>';
+  h+='<h2>Tests</h2><div class="tw"><table><thead><tr><th>When</th><th class="n">5 s</th><th class="n">4 min</th><th class="n">20 min</th><th class="n">FTP</th></tr></thead><tbody>'+
+    P.tests.map(t=>'<tr><td>'+esc(t.when)+'<br><small class="muted">'+esc(t.block)+'</small></td><td class="n">'+(t.p5||'–')+'</td><td class="n">'+(t.p4||'–')+'</td><td class="n">'+(t.p20||'–')+'</td><td class="n">'+(t.ftp||'–')+'</td></tr>').join('')+'</tbody></table></div>';
+  let last=0;try{last=+localStorage.getItem(LSX)||0}catch(e){}
+  h+='<h2>Your data</h2><div class="card stack"><div style="font-size:14px">Everything you log stays on this phone: <b class="num">'+Object.keys(st.log).length+'</b> days logged, <b class="num">'+Object.keys(st.weight).length+'</b> weights, <b class="num">'+Object.keys(st.over).length+'</b> changed sessions. Last export: '+(last?new Date(last).toLocaleDateString([], {month:'short',day:'numeric'}):'never')+'.</div>'+
+    '<div class="btnrow"><button class="btn" id="exp">Export log</button><button class="btn ghost" id="cpy">Copy log</button><button class="btn ghost" id="imp">Import</button><input type="file" id="impFile" accept=".json,application/json" hidden></div>'+
+    '<div class="status" id="dataStatus"></div><textarea id="cpyBox" hidden readonly style="min-height:120px;font-family:var(--f-num);font-size:12px"></textarea>'+
+    '<div class="note">Send the exported file with your ride files for plan reviews. Import merges a backup into this phone (newest entry wins). Plan version '+esc(P.version)+'.</div></div>';
+  h+='<h2>Latest plan changes</h2><div class="card stack">'+P.reviews.slice(0,3).map(r=>'<div><div class="eyebrow">'+nice(r.date)+' · '+esc(r.period)+'</div><div style="font-size:14px">'+esc(r.changes)+'</div></div>').join('')+'</div></div>';
+  return h;
+}
+
+function wire(view){
+  current=view;
+  document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{st.date=add(st.date,+b.dataset.nav);keepDate();render('day')});
+  const tb=document.querySelector('[data-today]'); if(tb) tb.onclick=()=>{st.date=today;keepDate();render('day')};
+  document.querySelectorAll('[data-go]').forEach(a=>a.onclick=e=>{st.date=a.dataset.go;keepDate();if(location.hash==='#day'){e.preventDefault();render('day')}});
+  document.querySelectorAll('[data-wk]').forEach(b=>b.onclick=()=>{st.weekMon=add(st.weekMon,+b.dataset.wk);render('week')});
+  const tw=document.querySelector('[data-thisweek]'); if(tw) tw.onclick=()=>{st.weekMon=monOf(today);render('week')};
+  if(view==='numbers'){
+    const ds_=document.getElementById('dataStatus');
+    document.getElementById('exp').onclick=()=>exportLog(ds_);
+    document.getElementById('cpy').onclick=()=>copyLog(ds_);
+    document.getElementById('imp').onclick=()=>document.getElementById('impFile').click();
+    document.getElementById('impFile').onchange=e=>importLog(e.target.files[0],ds_);
+  }
+  if(view==='season'){const n=document.querySelector('.wk.now'); if(n) setTimeout(()=>n.scrollIntoView({block:'center'}),0)}
+  if(view==='day'){
+    let pick=(st.log[st.date]||{}).status||null;
+    document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{pick=pick===b.dataset.s?null:b.dataset.s;document.querySelectorAll('.seg button').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.s===pick)))});
+    const sv=document.getElementById('save'); if(sv) sv.onclick=()=>save(pick);
+    document.getElementById('amin')&&document.getElementById('amin').addEventListener('input',()=>{st.dirty=true});
+    const eb=document.getElementById('editBtn'); if(eb) eb.onclick=()=>{st.editing=!st.editing;render('day')};
+    const rb=document.getElementById('resetBtn'); if(rb) rb.onclick=()=>{delete st.over[st.date];persist();st.editing=false;render('day')};
+    const es=document.getElementById('eSave'); if(es) es.onclick=()=>{
+      const v=id=>document.getElementById(id).value.trim();
+      const m=v('eMin');
+      st.over[st.date]={name:v('eName')||'Changed session',min:m?Number(m):0,target:v('eTgt'),cad:v('eCad'),detail:v('eDet'),why:v('eWhy'),updated:Date.now()};
+      persist();st.editing=false;render('day');
+    };
+  }
+}
+function keepDate(){st.editing=false}
+
+function save(pick){
+  const s=st.date, msg=document.getElementById('saveStatus');
+  const rpe=document.getElementById('rpe').value, note=document.getElementById('note').value.trim(), wraw=document.getElementById('wt').value.trim(), mraw=document.getElementById('amin').value.trim();
+  const lb=wraw===''?null:Number(wraw.replace(',','.'));
+  if(wraw!==''&&!(lb>150&&lb<350)){msg.textContent='Weight should be in pounds, between 150 and 350.';return}
+  const mins=mraw===''?null:Number(mraw);
+  if(mraw!==''&&!(mins>=0&&mins<=600)){msg.textContent='Actual minutes should be between 0 and 600.';return}
+  if(pick||rpe||note||mins!==null) st.log[s]={status:pick||'',rpe:rpe?Number(rpe):null,min:mins,note:note,updated:Date.now(),session:(session(s)||{}).name||''};
+  else delete st.log[s];
+  if(lb!==null) st.weight[s]={lb:lb,updated:Date.now()}; else delete st.weight[s];
+  if(persist()){st.dirty=false;msg.textContent='Saved'} else msg.textContent='Couldn\'t save: this browser is blocking storage.';
+}
+function exportData(){return JSON.stringify({app:'4K Pursuit',exportedAt:new Date().toISOString(),planVersion:P.version,log:st.log,weight:st.weight,changes:st.over},null,1)}
+function markExported(){try{localStorage.setItem(LSX,String(Date.now()))}catch(e){}}
+async function exportLog(out){
+  const json=exportData(), name='ip4k-log-'+today+'.json';
+  try{
+    if(NATIVE){
+      const C=window.Capacitor.Plugins;
+      const r=await C.Filesystem.writeFile({path:name,data:json,directory:'CACHE',encoding:'utf8'});
+      await C.Share.share({title:'4K Pursuit log',files:[r.uri],dialogTitle:'Send your log'});
+      markExported();out.textContent='Exported.';return;
+    }
+    const f=new File([json],name,{type:'application/json'});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'4K Pursuit log'});markExported();out.textContent='Exported.';return}
+    const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=name;document.body.appendChild(a);a.click();a.remove();
+    markExported();out.textContent='Saved '+name+' to your downloads.';
+  }catch(e){
+    if(e&&(e.name==='AbortError'||/cancel/i.test(e.message||''))){out.textContent='Export cancelled.';return}
+    out.textContent='Sharing isn\'t available here. Use Copy log instead.';
+  }
+}
+async function copyLog(out){
+  const json=exportData(), box=document.getElementById('cpyBox');
+  try{await navigator.clipboard.writeText(json);markExported();out.textContent='Log copied. Paste it into the chat with Claude.';box.hidden=true}
+  catch(e){box.hidden=false;box.value=json;box.focus();box.select();out.textContent='Select all the text below and copy it.'}
+}
+function importLog(file,out){
+  if(!file) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    let d;try{d=JSON.parse(r.result)}catch(e){out.textContent='That file isn\'t a 4K Pursuit export.';return}
+    if(!d||typeof d!=='object'||!(d.log||d.weight)){out.textContent='That file isn\'t a 4K Pursuit export.';return}
+    let n=0;
+    const merge=(src,dst)=>{Object.keys(src||{}).forEach(k=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(k))return;const a=src[k],b=dst[k];if(a&&typeof a==='object'&&(!b||(a.updated||0)>(b.updated||0))){dst[k]=a;n++}})};
+    merge(d.log,st.log);merge(d.weight,st.weight);merge(d.changes,st.over);
+    persist();out.textContent='Imported '+n+' entries.';render('numbers');
+  };
+  r.onerror=()=>{out.textContent='Couldn\'t read that file.'};
+  r.readAsText(file);
+}
+async function refreshPlan(){
+  try{
+    const res=await fetch(REMOTE,{cache:'no-store'});
+    if(!res.ok) return;
+    const np=await res.json();
+    if(np&&np.version&&np.version>P.version&&Array.isArray(np.cal)){
+      P=np;indexPlan();try{localStorage.setItem(LSP,JSON.stringify(np))}catch(e){}
+      hdr();rerender();
+    }
+  }catch(e){}
+}
+function boot(){
+  loadStore();
+  window.addEventListener('hashchange',route);
+  hdr(); route();
+  refreshPlan();
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){refreshPlan();if(ds(new Date())!==today)location.reload()}});
+  try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+  if(!NATIVE&&'serviceWorker' in navigator&&location.protocol==='https:') navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+boot();
+})();
+</script>
+</body></html>

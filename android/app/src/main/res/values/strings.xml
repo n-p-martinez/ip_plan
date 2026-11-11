@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">4K Pursuit</string>
+    <string name="title_activity_main">4K Pursuit</string>
+    <string name="package_name">com.npmartinez.ip4k</string>
+    <string name="custom_url_scheme">com.npmartinez.ip4k</string>
+</resources>
