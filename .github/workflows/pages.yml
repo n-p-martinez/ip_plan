@@ -1,4 +1,5 @@
 name: Publish web app
+# Publishes web/ to https://n-p-martinez.github.io/ip_plan/
 on:
   push:
     branches: [main]
