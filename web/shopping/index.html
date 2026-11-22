@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Shopping List</title>
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#171B22" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Shopping List">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Same look as 4K Pursuit: sticky header with the three track lines, cards, light/dark. */
+:root{
+  --bg:#F2F4F6; --surface:#FFFFFF; --ink:#14181F; --muted:#5B6573; --line:#D9DEE5;
+  --red:#C81E3A; --blue:#1F5FBF; --ok:#1E7E46; --soft:#E8ECF1;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-num:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0E1116; --surface:#171B22; --ink:#E8ECF1; --muted:#9AA4B2; --line:#2A303A;
+  --red:#FF5A6E; --blue:#6EA2FF; --ok:#4CC47E; --soft:#1F242D; color-scheme:dark}}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:16px;line-height:1.45;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:640px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(40px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+header .in{max-width:640px;margin:0 auto;padding:10px 16px 8px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{white-space:nowrap;font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:.02em;text-transform:uppercase}
+.count{font-family:var(--f-num);font-size:12px;color:var(--muted);white-space:nowrap}
+.lines{height:6px;display:grid;grid-template-rows:2px 2px 2px}
+.lines i:nth-child(1){background:var(--ink)} .lines i:nth-child(2){background:var(--red)} .lines i:nth-child(3){background:var(--blue)}
+.prog{height:3px;background:var(--soft)} .prog>div{height:100%;width:0;background:var(--ok);transition:width .2s}
+h2{font-family:var(--f-display);font-weight:700;font-size:20px;text-transform:uppercase;letter-spacing:.04em;margin:0}
+h3{font-family:var(--f-display);font-weight:700;font-size:18px;text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px}
+.ghead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:22px 2px 8px}
+.ghead .src{font-size:12px;color:var(--muted);display:block;font-family:var(--f-body);text-transform:none;letter-spacing:0;font-weight:500;overflow-wrap:anywhere}
+.linkbtn{appearance:none;border:0;background:none;color:var(--blue);font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:2px 4px;flex:none}
+.linkbtn.danger{color:var(--red)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+ul{list-style:none;margin:0;padding:0}
+li{display:flex;align-items:flex-start;gap:12px;padding:12px 12px 12px 14px;border-top:1px solid var(--line);-webkit-tap-highlight-color:transparent}
+li:first-child{border-top:0}
+.tap{display:flex;gap:12px;flex:1;min-width:0;cursor:pointer;user-select:none}
+.box{flex:none;width:24px;height:24px;border:2px solid var(--muted);border-radius:6px;margin-top:1px;display:grid;place-items:center}
+li.done .box{background:var(--ok);border-color:var(--ok)}
+li.done .box::after{content:"";width:6px;height:12px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.name{font-size:16px;line-height:1.3;overflow-wrap:anywhere}
+.note{font-size:13px;color:var(--muted);margin-top:2px}
+li.done .name{text-decoration:line-through;color:var(--muted)}
+.x{appearance:none;flex:none;border:0;background:none;color:var(--muted);font-size:18px;line-height:1;padding:4px 6px;cursor:pointer;opacity:.6}
+body.hide li.done, body.hide section.empty{display:none}
+.panel{padding:16px;margin-top:22px}
+.panel p{margin:0 0 10px;font-size:14px;color:var(--muted)}
+.row{display:flex;gap:8px}
+input,textarea{flex:1;width:100%;min-width:0;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg);color:var(--ink)}
+textarea{height:72px;font-family:var(--f-num);font-size:12px;margin-bottom:8px;resize:vertical}
+.btn{appearance:none;font:inherit;font-weight:600;padding:10px 16px;border:0;border-radius:var(--r);background:var(--ink);color:var(--surface);cursor:pointer;flex:none}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.toggle{appearance:none;font:inherit;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.toggle[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.msg{font-size:14px;margin-top:8px;min-height:1em;color:var(--ok)}
+.msg.err{color:var(--red)}
+.center{text-align:center;margin-top:28px}
+.confirm{margin-top:10px;font-size:14px}
+.confirm .btn{margin:8px 4px 0}
+.empty-state{color:var(--muted);text-align:center;padding:28px 8px}
+</style>
+</head><body>
+<header>
+  <div class="in">
+    <div class="brand">Shopping List</div>
+    <div class="row" style="align-items:center">
+      <span class="count" id="count"></span>
+      <button class="toggle" id="hideBtn" aria-pressed="false">Hide checked</button>
+    </div>
+  </div>
+  <div class="lines"><i></i><i></i><i></i></div>
+  <div class="prog"><div id="prog"></div></div>
+</header>
+<main class="wrap">
+  <div id="list"></div>
+
+  <div class="card panel">
+    <h3>Add an item</h3>
+    <form class="row" id="addForm">
+      <input id="addInput" placeholder="e.g. paper towels" autocomplete="off">
+      <button class="btn" type="submit">Add</button>
+    </form>
+  </div>
+
+  <div class="card panel" id="urlPanel">
+    <h3>Add a recipe link</h3>
+    <p id="urlHelp">Paste a recipe link (needs signal). Or, in Chrome, tap Share → Shopping List. Ingredients are added as written.</p>
+    <form class="row" id="urlForm">
+      <input id="urlInput" type="url" inputmode="url" placeholder="https://…" autocomplete="off">
+      <button class="btn" type="submit">Get</button>
+    </form>
+    <div class="msg" id="urlMsg"></div>
+  </div>
+
+  <div class="card panel">
+    <h3>Import from Claude</h3>
+    <p>Paste the code Claude gives you. It starts with SHOPLIST:</p>
+    <textarea id="codeInput" placeholder="SHOPLIST:…" autocomplete="off" spellcheck="false"></textarea>
+    <button class="btn" id="codeBtn">Import</button>
+    <div class="msg" id="codeMsg"></div>
+  </div>
+
+  <div class="center">
+    <button class="btn ghost" id="resetBtn">Uncheck everything</button>
+    <div class="confirm" id="confirm" hidden>Uncheck every item?<br>
+      <button class="btn" id="yesBtn">Uncheck all</button><button class="btn ghost" id="noBtn">Cancel</button>
+    </div>
+  </div>
+</main>
+<script>
+const NATIVE=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
+const LS="shoplist-v1";
+
+/* Starting list: mole, mojo turkey and acorn squash soup, scaled for 5. */
+const START=[
+  ["Meat",[
+    ["Small whole turkey or bone-in turkey breast, 6–7 lb","Mojo turkey (half recipe). Roasts faster than the recipe's 14-lb timing"],
+    ["Boneless turkey breast with skin, about 2 lb","Mole. One 2-lb roast or half a breast"]]],
+  ["Produce",[
+    ["Garlic, 1 head","8 cloves total"],
+    ["Tomatillos, 2 medium","Mole"],
+    ["Acorn squash, 2 medium (about 3 lb)","Soup"],
+    ["Yellow onion, 1 large","Soup"],
+    ["Carrots, 2 medium","Soup"],
+    ["Fresh thyme, 1 small bunch","Soup + garnish"],
+    ["Lemons, 2","Soup juice, plus ½ for the sour orange substitute"],
+    ["Orange, 1 (or bottled sour orange juice)","Mojo: need 2 tbsp sour orange juice"],
+    ["Watercress or flat-leaf parsley","Mole garnish"],
+    ["Microgreens (optional)","Soup garnish"]]],
+  ["Latin aisle / specialty",[
+    ["Dried mulato chiles, 3","About 1½ oz"],
+    ["Dried ancho chiles, 2","About 1 oz"],
+    ["Dried pasilla chiles, 3","About 1 oz"],
+    ["Mexican chocolate, 1 small tablet","Need only about ½ oz"],
+    ["Mexican canela (or ground cinnamon)","¼ tsp"],
+    ["Pork lard (or vegetable oil)","About ¼ cup"]]],
+  ["Nuts & dried fruit",[
+    ["Sesame seeds","¼ cup"],["Unskinned almonds","¼ cup"],["Raisins","¼ cup"],["Pepitas (optional)","Soup garnish"]]],
+  ["Pantry — check what you have",[
+    ["Vegetable broth, 32 oz carton","Soup: 4 cups (a bit less for thicker soup)"],
+    ["Extra-virgin olive oil","About ¼ cup + extra for drizzling and turkey skin"],
+    ["White bread, 1 slice","Mole"],["Sugar","2–3 tbsp"],["Maple syrup","1 tsp"],["Salt & black pepper",""],
+    ["Oregano","¼ tsp"],["Cumin","¼ tsp"],["Nutmeg","¼ tsp"],["Cayenne","⅛ tsp"],["Ground cloves","A pinch"],["Anise seed (optional)","⅛ tsp"]]],
+];
+
+let uid=Date.now();
+const nid=()=>(uid++).toString(36);
+const mkGroup=(title,items,url)=>({id:nid(),title,url:url||"",items:items.map(([name,note])=>({id:nid(),name,note:note||"",done:false}))});
+let state;
+try{state=JSON.parse(localStorage.getItem(LS)||"null")}catch(e){state=null}
+if(!state||!Array.isArray(state.groups)) state={hide:false,groups:START.map(([t,i])=>mkGroup(t,i))};
+function save(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}}
+
+const $=id=>document.getElementById(id);
+const MISC="Added items";
+let pendingDelete=null;
+
+function render(){
+  const list=$("list");list.innerHTML="";
+  let total=0,done=0;
+  if(!state.groups.length){list.innerHTML='<div class="empty-state">Your list is empty. Add an item, a recipe link, or a code from Claude below.</div>'}
+  for(const g of state.groups){
+    const sec=document.createElement("section");
+    const head=document.createElement("div");head.className="ghead";
+    const h=document.createElement("h2");h.textContent=g.title;
+    if(g.url){const s=document.createElement("span");s.className="src";s.textContent=g.url.replace(/^https?:\/\/(www\.)?/,"").split(/[/?#]/)[0];h.appendChild(s)}
+    const del=document.createElement("button");del.className="linkbtn"+(pendingDelete===g.id?" danger":"");
+    del.textContent=pendingDelete===g.id?"Tap again to remove":"Remove";
+    del.onclick=()=>{
+      if(pendingDelete===g.id){state.groups=state.groups.filter(x=>x.id!==g.id);pendingDelete=null;save()}
+      else{pendingDelete=g.id;setTimeout(()=>{if(pendingDelete===g.id){pendingDelete=null;render()}},3000)}
+      render();
+    };
+    head.append(h,del);sec.appendChild(head);
+    const card=document.createElement("div");card.className="card";
+    const ul=document.createElement("ul");let open=0;
+    for(const it of g.items){
+      total++;if(it.done)done++;else open++;
+      const li=document.createElement("li");if(it.done)li.className="done";
+      const tap=document.createElement("div");tap.className="tap";tap.setAttribute("role","checkbox");tap.setAttribute("aria-checked",String(!!it.done));
+      const box=document.createElement("div");box.className="box";
+      const txt=document.createElement("div");
+      const nm=document.createElement("div");nm.className="name";nm.textContent=it.name;txt.appendChild(nm);
+      if(it.note){const nt=document.createElement("div");nt.className="note";nt.textContent=it.note;txt.appendChild(nt)}
+      tap.append(box,txt);tap.onclick=()=>{it.done=!it.done;save();render()};
+      const x=document.createElement("button");x.className="x";x.textContent="✕";x.setAttribute("aria-label","Remove "+it.name);
+      x.onclick=()=>{g.items=g.items.filter(y=>y.id!==it.id);if(!g.items.length)state.groups=state.groups.filter(y=>y!==g);save();render()};
+      li.append(tap,x);ul.appendChild(li);
+    }
+    if(!open)sec.className="empty";
+    card.appendChild(ul);sec.appendChild(card);list.appendChild(sec);
+  }
+  $("count").textContent=done+"/"+total;
+  $("prog").style.width=(total?done/total*100:0)+"%";
+  document.body.classList.toggle("hide",!!state.hide);
+  $("hideBtn").setAttribute("aria-pressed",String(!!state.hide));
+}
+
+$("hideBtn").onclick=()=>{state.hide=!state.hide;save();render()};
+$("addForm").addEventListener("submit",e=>{
+  e.preventDefault();const v=$("addInput").value.trim();if(!v)return;
+  let g=state.groups.find(x=>x.title===MISC);if(!g){g=mkGroup(MISC,[]);state.groups.push(g)}
+  g.items.push({id:nid(),name:v,note:"",done:false});$("addInput").value="";save();render();
+});
+$("resetBtn").onclick=()=>{$("confirm").hidden=false};
+$("noBtn").onclick=()=>{$("confirm").hidden=true};
+$("yesBtn").onclick=()=>{state.groups.forEach(g=>g.items.forEach(i=>i.done=false));$("confirm").hidden=true;save();render()};
+
+/* ---------- Recipe from a link ---------- */
+function decodeEntities(s){const t=document.createElement("textarea");t.innerHTML=s;return t.value}
+function clean(s){return decodeEntities(decodeEntities(String(s)).replace(/<[^>]*>/g," ")).replace(/\s+/g," ").trim()}
+function findRecipe(n){
+  if(!n||typeof n!=="object")return null;
+  if(Array.isArray(n)){for(const x of n){const r=findRecipe(x);if(r)return r}return null}
+  const t=[].concat(n["@type"]||[]);
+  if(t.includes("Recipe")&&(n.recipeIngredient||n.ingredients))return n;
+  for(const k of ["@graph","mainEntity","mainEntityOfPage","itemListElement","item"]){if(n[k]&&typeof n[k]==="object"){const r=findRecipe(n[k]);if(r)return r}}
+  return null;
+}
+function parseRecipe(html,url){
+  const doc=new DOMParser().parseFromString(html,"text/html");
+  const og=doc.querySelector('meta[property="og:title"]');
+  const fallbackTitle=clean(og?og.content:(doc.title||url));
+  for(const s of doc.querySelectorAll('script[type="application/ld+json"]')){
+    try{
+      const r=findRecipe(JSON.parse(s.textContent.trim()));
+      if(r){const items=[].concat(r.recipeIngredient||r.ingredients).map(clean).filter(Boolean);
+        if(items.length)return{title:clean(r.name||fallbackTitle),items}}
+    }catch(e){}
+  }
+  const sels=['[itemprop="recipeIngredient"]','[itemprop="ingredients"]','.wprm-recipe-ingredient','.tasty-recipes-ingredients li','.mv-create-ingredients li','.recipe-ingredients li','.ingredients li','.ingredient-list li','#ingredients li','[class*="ingredient"] li'];
+  for(const sel of sels){
+    const items=[...doc.querySelectorAll(sel)].map(e=>clean(e.textContent)).filter(Boolean);
+    if(items.length>=2)return{title:fallbackTitle,items:[...new Set(items)]};
+  }
+  return null;
+}
+async function addFromUrl(text){
+  const msg=$("urlMsg");msg.className="msg";
+  const m=String(text||"").match(/https?:\/\/[^\s"'<>]+/);
+  if(!m){msg.className="msg err";msg.textContent="That doesn't look like a link.";return}
+  const url=m[0];
+  if(state.groups.some(g=>g.url===url)){msg.className="msg err";msg.textContent="That recipe is already on your list.";return}
+  msg.textContent="Getting the recipe…";
+  let html;
+  try{
+    const r=await fetch(url,{headers:{"Accept":"text/html"}});
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    html=await r.text();
+  }catch(e){
+    msg.className="msg err";
+    msg.textContent=NATIVE?"Couldn't load the page. Check your signal, or send the link to Claude."
+      :"Websites block this in the browser. Use the Android app for links, or send the link to Claude.";
+    return;
+  }
+  const rec=parseRecipe(html,url);
+  if(!rec){msg.className="msg err";msg.textContent="Couldn't find an ingredient list on that page. Send the link to Claude instead.";return}
+  state.groups.push(mkGroup(rec.title,rec.items.map(i=>[i,""]),url));save();render();
+  $("urlInput").value="";
+  msg.textContent="Added "+rec.items.length+" ingredients from “"+rec.title+"”.";
+}
+$("urlForm").addEventListener("submit",e=>{e.preventDefault();addFromUrl($("urlInput").value.trim())});
+window.onShared=text=>{$("urlInput").value=text;$("urlPanel").scrollIntoView({behavior:"smooth"});addFromUrl(text)};
+if(!NATIVE)$("urlHelp").textContent="On the web, most recipe sites block this. Use the Android app to add links, or send them to Claude.";
+
+/* ---------- Code from Claude ---------- */
+$("codeBtn").onclick=()=>{
+  const msg=$("codeMsg");msg.className="msg";
+  const code=$("codeInput").value.replace(/\s+/g,"");
+  if(!code.startsWith("SHOPLIST:")){msg.className="msg err";msg.textContent="The code should start with SHOPLIST:";return}
+  try{
+    const bin=atob(code.slice(9));const bytes=Uint8Array.from(bin,c=>c.charCodeAt(0));
+    const data=JSON.parse(new TextDecoder().decode(bytes));
+    if(!Array.isArray(data.groups))throw 0;
+    if(data.replace)state.groups=[];
+    let n=0;
+    for(const g of data.groups){state.groups.push(mkGroup(String(g.title),g.items.map(i=>Array.isArray(i)?i:[String(i),""]),g.url));n+=g.items.length}
+    save();render();$("codeInput").value="";
+    msg.textContent="Imported "+n+" items"+(data.replace?", replacing your old list.":".");
+  }catch(e){msg.className="msg err";msg.textContent="That code didn't work. Make sure you copied all of it."}
+};
+
+render();
+window.appReady=true;
+if(!NATIVE&&"serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body></html>

@@ -1,0 +1,7 @@
+{
+  "appId": "com.npmartinez.shoplist",
+  "appName": "Shopping List",
+  "webDir": "www",
+  "android": { "allowMixedContent": false },
+  "plugins": { "CapacitorHttp": { "enabled": true } }
+}

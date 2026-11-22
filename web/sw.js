@@ -6,6 +6,7 @@ self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.
 self.addEventListener('fetch',e=>{
   const req=e.request; if(req.method!=='GET') return;
   const url=new URL(req.url);
+  if(url.pathname.includes('/shopping/')) return; // Shopping List has its own service worker
   const fresh=req.mode==='navigate'||url.pathname.endsWith('/plan.json')||url.pathname.endsWith('/index.html');
   if(url.origin===location.origin&&fresh){
     e.respondWith(fetch(req).then(r=>{const cp=r.clone();caches.open(CACHE).then(c=>c.put(req.mode==='navigate'?'index.html':req,cp));return r}).catch(()=>caches.match(req.mode==='navigate'?'index.html':req).then(r=>r||caches.match('./'))));

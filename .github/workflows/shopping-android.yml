@@ -1,0 +1,37 @@
+name: Build Shopping List app
+on:
+  push:
+    branches: [main]
+    paths: ["web/shopping/**", "shopping/**", ".github/workflows/shopping-android.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  apk:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: shopping
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+      - run: npm ci
+      - run: npm run sync
+      - name: Build APK
+        working-directory: shopping/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug -Pvc=${{ github.run_number }} --no-daemon
+      - name: Publish to the "shopping-android" release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk Shopping-List.apk
+          gh release delete shopping-android --yes --cleanup-tag || true
+          gh release create shopping-android Shopping-List.apk --latest=false --title "Shopping List for Android (build ${{ github.run_number }})" --notes "Install Shopping-List.apk on your phone. Each build installs over the previous one and keeps your list."
