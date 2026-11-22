@@ -159,12 +159,50 @@ const START=[
     ["Oregano","¼ tsp"],["Cumin","¼ tsp"],["Nutmeg","¼ tsp"],["Cayenne","⅛ tsp"],["Ground cloves","A pinch"],["Anise seed (optional)","⅛ tsp"]]],
 ];
 
+/* Recipes added later. Lists started before they existed get them appended once (matched by title). */
+const ADDED=[
+  ["Gluten-free mac and cheese",[
+    ["Gluten-free elbow macaroni, 12 oz","Author uses Barilla GF"],
+    ["Gluten-free 1-to-1 baking flour","3 tbsp (author uses Bob's Red Mill 1-to-1)"],
+    ["Whole milk","2 cups (any milk except coconut)"],
+    ["Sharp cheddar, 8 oz block","Shred it yourself: 1⅔ cups. Author advises against pre-shredded"],
+    ["Parmesan or Pecorino Romano, small wedge","⅓ cup shredded"],
+    ["Butter","¼ cup"],
+    ["Garlic powder","¼ tsp"],
+    ["Salt & black pepper","Already on your pantry list"]],"https://www.texanerin.com/gluten-free-mac-and-cheese/"],
+  ["Turkey gravy (half batch)",[
+    ["Turkey wings or necks, 1–1½ lb","Stands in for the backbone. Add the mojo turkey's neck and giblets if it has them"],
+    ["Low-sodium chicken or turkey broth, 32 oz carton","Need 3 cups. Choose gluten-free-labeled, same as the stuffing"],
+    ["Yellow onion, 1 medium","Extra beyond the soup onion"],
+    ["Carrot, 1","Extra beyond the soup carrots"],
+    ["Celery","2 stalks. The stuffing's bunch covers it"],
+    ["Bay leaves","1 leaf"],
+    ["Fresh thyme","About 4 sprigs. The bunch already on your list covers it"],
+    ["Unsalted butter","1½ tbsp"],
+    ["All-purpose flour","2 tbsp. If anyone is gluten-free, use the GF flour from the mac and cheese"],
+    ["Vegetable oil","½ tbsp"]],"https://www.seriouseats.com/butterfiled-roast-turkey-with-gravy-recipe"],
+  ["Gluten-free stuffing",[
+    ["Gluten-free bread, 1-lb loaf","Thick, hearty slices, e.g. Canyon Bakehouse Heritage"],
+    ["Yellow onions, 2 medium","Extra beyond the soup and gravy onions"],
+    ["Celery, 1 bunch","3 stalks here + 2 for the gravy"],
+    ["Fresh sage, small package","1 tsp chopped"],
+    ["Dried thyme","1 tsp"],
+    ["Gluten-free chicken broth, 32 oz carton","Need 2 cups. Check for a gluten-free label"],
+    ["Eggs, 2 large",""],
+    ["Olive oil","3 tbsp (already on your pantry list)"]],"https://www.allrecipes.com/recipe/230117/gluten-free-thanksgiving-stuffing/"],
+];
+const LIST_VERSION=2;
+
 let uid=Date.now();
 const nid=()=>(uid++).toString(36);
 const mkGroup=(title,items,url)=>({id:nid(),title,url:url||"",items:items.map(([name,note])=>({id:nid(),name,note:note||"",done:false}))});
 let state;
 try{state=JSON.parse(localStorage.getItem(LS)||"null")}catch(e){state=null}
-if(!state||!Array.isArray(state.groups)) state={hide:false,groups:START.map(([t,i])=>mkGroup(t,i))};
+if(!state||!Array.isArray(state.groups)) state={hide:false,v:LIST_VERSION,groups:[...START,...ADDED].map(([t,i,u])=>mkGroup(t,i,u))};
+if((state.v||1)<LIST_VERSION){
+  for(const [t,i,u] of ADDED) if(!state.groups.some(g=>g.title===t)) state.groups.push(mkGroup(t,i,u));
+  state.v=LIST_VERSION;
+}
 function save(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}}
 
 const $=id=>document.getElementById(id);
@@ -296,7 +334,7 @@ $("codeBtn").onclick=()=>{
   }catch(e){msg.className="msg err";msg.textContent="That code didn't work. Make sure you copied all of it."}
 };
 
-render();
+save();render();
 window.appReady=true;
 if(!NATIVE&&"serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
