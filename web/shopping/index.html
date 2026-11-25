@@ -74,6 +74,37 @@ textarea{height:72px;font-family:var(--f-num);font-size:12px;margin-bottom:8px;r
 .confirm{margin-top:10px;font-size:14px}
 .confirm .btn{margin:8px 4px 0}
 .empty-state{color:var(--muted);text-align:center;padding:28px 8px}
+/* Tabs + schedule */
+.tabs{max-width:640px;margin:0 auto;display:flex;gap:4px;padding:0 16px}
+.tabs button{appearance:none;flex:1;border:0;background:none;font-family:var(--f-display);font-weight:700;font-size:16px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:6px 0 8px;border-bottom:3px solid transparent;cursor:pointer}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--red)}
+.days{display:flex;gap:8px;margin:14px 0 6px}
+.days .toggle{flex:1;padding:8px 12px;font-size:14px}
+.shift{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted);margin:10px 2px 0}
+.shift input{flex:none;width:auto;padding:6px 8px;font-size:15px}
+.next{margin-top:14px;padding:12px 14px;border-left:4px solid var(--blue)}
+.next .lbl{font-family:var(--f-display);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:13px;color:var(--blue)}
+.next .what{font-weight:600;margin-top:2px}
+.slot{font-family:var(--f-num);font-size:13px;color:var(--muted);margin:18px 4px 6px}
+.step{display:flex;gap:12px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.step:first-child{border-top:0}
+.step .body{flex:1;min-width:0}
+.step .t{font-weight:600;line-height:1.3}
+.step .d{font-size:14px;color:var(--muted);margin-top:3px}
+.step .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{font-size:11px;font-weight:600;letter-spacing:.02em;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--ink)}
+.chip.oven{background:var(--red);color:#fff}
+.chip.stove{background:var(--blue);color:#fff}
+.chip.gf{background:var(--ok);color:#fff}
+.need{font-size:13px;margin-top:6px;color:var(--muted)}
+.need.warn{color:var(--red);font-weight:600}
+.step.done .t{text-decoration:line-through;color:var(--muted)}
+.step.done .box{background:var(--ok);border-color:var(--ok)}
+.step.done .box::after{content:"";width:6px;height:12px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.step.now{box-shadow:inset 4px 0 0 var(--blue)}
+.nowline{display:flex;align-items:center;gap:8px;margin:14px 2px 0;font-family:var(--f-num);font-size:12px;color:var(--blue)}
+.nowline::after{content:"";flex:1;height:2px;background:var(--blue)}
+body.hide .step.done{display:none}
 </style>
 </head><body>
 <header>
@@ -84,10 +115,15 @@ textarea{height:72px;font-family:var(--f-num);font-size:12px;margin-bottom:8px;r
       <button class="toggle" id="hideBtn" aria-pressed="false">Hide checked</button>
     </div>
   </div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="list" aria-selected="true">List</button>
+    <button role="tab" data-tab="sched" aria-selected="false">Schedule</button>
+  </nav>
   <div class="lines"><i></i><i></i><i></i></div>
   <div class="prog"><div id="prog"></div></div>
 </header>
-<main class="wrap">
+<main class="wrap" id="schedView" hidden></main>
+<main class="wrap" id="listView">
   <div id="list"></div>
 
   <div class="card panel">
@@ -191,7 +227,30 @@ const ADDED=[
     ["Eggs, 2 large",""],
     ["Olive oil","3 tbsp (already on your pantry list)"]],"https://www.allrecipes.com/recipe/230117/gluten-free-thanksgiving-stuffing/"],
 ];
-const LIST_VERSION=2;
+ADDED.push(
+  ["Bruschetta & crostini",[
+    ["Baguette, 1 (day-old is fine)","Crostini, baked Wednesday"],
+    ["Roma tomatoes, about 1½ lb (6)","Topping"],
+    ["Fresh basil, 1 bunch",""],
+    ["Balsamic glaze (optional)","For drizzling"],
+    ["Gluten-free baguette or crackers (optional)","If a gluten-free guest wants bruschetta"]]],
+  ["Regular stuffing",[
+    ["Sturdy white or French bread, 1-lb loaf","Same recipe as the GF stuffing, regular bread"],
+    ["Yellow onions, 2 medium","All recipes together: about 6 onions"],
+    ["Celery, 1 more bunch","All recipes together: about 8 stalks"],
+    ["Chicken broth, 2 cups","All recipes together: 7 cups, so two 32-oz cartons is enough"],
+    ["Eggs, 2 more","4 total with the GF stuffing"]]],
+  ["Roasted carrots + cashew sauce",[
+    ["Carrots, 2 lb (slender or rainbow if you can)",""],
+    ["Raw unsalted cashews, 1 cup","Sauce: cashews + lemon + garlic + water, blended"],
+    ["Lemon, 1 more",""],
+    ["Chives or parsley (optional)","Garnish"]]],
+  ["Potato stacks",[
+    ["Yukon Gold potatoes, 3 lb","Baked in a 12-cup muffin tin"],
+    ["Butter, 1 more stick",""],
+    ["Parmesan, 1 more small wedge","About ½ cup grated"]]]
+);
+const LIST_VERSION=3;
 
 let uid=Date.now();
 const nid=()=>(uid++).toString(36);
@@ -209,7 +268,7 @@ const $=id=>document.getElementById(id);
 const MISC="Added items";
 let pendingDelete=null;
 
-function render(){
+let render=function(){
   const list=$("list");list.innerHTML="";
   let total=0,done=0;
   if(!state.groups.length){list.innerHTML='<div class="empty-state">Your list is empty. Add an item, a recipe link, or a code from Claude below.</div>'}
@@ -333,6 +392,139 @@ $("codeBtn").onclick=()=>{
     msg.textContent="Imported "+n+" items"+(data.replace?", replacing your old list.":".");
   }catch(e){msg.className="msg err";msg.textContent="That code didn't work. Make sure you copied all of it."}
 };
+
+
+/* ---------- Thanksgiving schedule (one oven) ---------- */
+const WED="2026-11-25", THU="2026-11-26";
+const H=(h,m)=>h*60+(m||0);
+/* Wednesday times are clock times. Thursday times are minutes relative to appetizers (default 3:00 pm). */
+const STEPS=[
+ {id:"w1",day:"wed",t:H(10),dish:"Turkey",kind:"prep",title:"Spatchcock the turkey, then dry brine",detail:"Cut out the backbone and save it with the neck and giblets for gravy stock. Salt all over and under the skin, then refrigerate uncovered on a rack."},
+ {id:"w2",day:"wed",t:H(10,15),dish:"Carrots",kind:"prep",title:"Soak cashews",detail:"1 cup in water. Skip if you have a high-speed blender."},
+ {id:"w3",day:"wed",t:H(10,30),dish:"Mole",kind:"stove",title:"Start the mole",detail:"Broil tomatillos, toast sesame and bread, fry the chiles and soak them ~30 min, fry garlic, almonds and raisins. (Bayless steps 1–2)"},
+ {id:"w4",day:"wed",t:H(11),dish:"Gravy",kind:"stove",title:"Gravy stock",detail:"Brown the backbone, neck and giblets, add onion, carrot, celery, broth, thyme and bay. Simmer 45 min, strain, skim, refrigerate.",needs:["w1"]},
+ {id:"w5",day:"wed",t:H(11,30),dish:"Mole",kind:"stove",title:"Salt and brown the mole turkey breast",detail:"About 10 min. Cool, then refrigerate separately from the mole. Don't braise it today: reheated, it dries out."},
+ {id:"w6",day:"wed",t:H(12),dish:"Mole",kind:"stove",title:"Blend, strain and simmer the mole",detail:"Fry the chile purée, then the tomatillo purée, add water, simmer 45 min, season. Cool and refrigerate. It gets better overnight. (Bayless steps 3–4)",needs:["w3"]},
+ {id:"w7",day:"wed",t:H(12,30),dish:"Soup",kind:"oven",title:"Acorn squash soup",detail:"Roast the squash, cook and blend the soup. Cool and refrigerate. Don't garnish yet."},
+ {id:"w8",day:"wed",t:H(2+12),dish:"Calabaza",kind:"stove",title:"Calabaza en tacha (dessert)",detail:"About 2 hrs on the stovetop, then cools in its syrup overnight. Better made today."},
+ {id:"w9",day:"wed",t:H(2+12,30),dish:"Bruschetta",kind:"oven",title:"Bake crostini",detail:"Slice the baguette ⅓ inch thick, brush with oil, bake at 400°F 10–12 min. Cool completely and store airtight."},
+ {id:"w10",day:"wed",t:H(3+12),dish:"Stuffing",kind:"oven",gf:true,title:"Toast stuffing bread cubes",detail:"Cut the GF loaf FIRST on a clean board, then the regular loaf. ¾-inch cubes, 325°F for 12–17 min, separate pans. Store separately, labeled."},
+ {id:"w11",day:"wed",t:H(4+12),dish:"Carrots",kind:"prep",title:"Blend cashew sauce",detail:"Cashews, lemon juice, 1 garlic clove, salt, and water to thin. Refrigerate.",needs:["w2"]},
+ {id:"w12",day:"wed",t:H(7+12),dish:"Prep",kind:"prep",title:"Evening prep",detail:"Chop onions and celery for both stuffings (bag separately). Peel and cut carrots. Shred cheddar and Parmesan. Set out serving dishes and label the GF ones."},
+
+ {id:"t1",day:"thu",t:-420,dish:"Turkey",kind:"prep",title:"Mojo on the turkey",detail:"Blend the mojo WITHOUT salt (the bird is brined). Rub it under the skin and on the underside only, keeping the skin dry. Back in the fridge, uncovered.",needs:["w1"]},
+ {id:"t2",day:"thu",t:-360,dish:"Stuffing",kind:"stove",gf:true,title:"Assemble both stuffings",detail:"GF first with clean tools: sauté onions and celery in oil, add sage, thyme, salt and pepper, then GF cubes, GF broth and eggs. Wash everything, then make the regular one. Grease two baking dishes.",needs:["w10","w12"]},
+ {id:"t3",day:"thu",t:-300,dish:"Potatoes",kind:"prep",title:"Assemble potato stacks",detail:"Slice potatoes very thin, toss with melted butter, garlic, thyme, Parmesan, salt and pepper, and stack in a greased 12-cup muffin tin."},
+ {id:"t4",day:"thu",t:-240,dish:"Stuffing",kind:"oven",title:"Bake both stuffings at 325°F",detail:"Covered 30 min, uncovered 10. They get reheated later.",needs:["t2"]},
+ {id:"t5",day:"thu",t:-180,dish:"Potatoes",kind:"oven",title:"Bake potato stacks at 400°F",detail:"50–60 min, until a knife slides through and the edges are golden. Leave them in the tin.",needs:["t3"]},
+ {id:"t6",day:"thu",t:-120,dish:"Turkey",kind:"prep",title:"Turkey out to temper",detail:"Set it on a rack over a rimmed sheet. Pat the skin very dry, rub with oil. Toss the carrots with oil and salt on a second sheet pan.",needs:["t1"]},
+ {id:"t7",day:"thu",t:-90,dish:"Bruschetta",kind:"prep",title:"Make the bruschetta topping",detail:"Diced tomatoes, garlic, basil, olive oil and salt. Let it sit at room temp."},
+ {id:"t8",day:"thu",t:-60,dish:"Gravy",kind:"stove",title:"Make the gravy base",detail:"Butter + flour roux (GF flour if needed), then whisk in the stock and simmer to reduce. Hold covered. The drippings go in later.",needs:["w4"]},
+ {id:"t9",day:"thu",t:-50,dish:"Oven",kind:"oven",title:"Oven to 450°F",detail:"Potato stacks are out. Set racks for the turkey (middle) and carrots (lower).",needs:["t5"]},
+ {id:"t10",day:"thu",t:-30,dish:"Turkey",kind:"oven",title:"Turkey in at 450°F",detail:"A 6–7 lb spatchcocked bird takes ~50–65 min. Start checking at 3:15. Done at 150°F breast and 165°F thigh.",needs:["t6","t9"]},
+ {id:"t11",day:"thu",t:-15,dish:"Bruschetta",kind:"prep",title:"Top the crostini",detail:"Assemble right before serving so they stay crisp.",needs:["w9","t7"]},
+ {id:"t12",day:"thu",t:0,dish:"Appetizers",kind:"serve",title:"Serve bruschetta"},
+ {id:"t13",day:"thu",t:0,dish:"Carrots",kind:"oven",title:"Carrots in on the lower rack",detail:"25–30 min at 450°F alongside the turkey. Toss once.",needs:["t6"]},
+ {id:"t14",day:"thu",t:10,dish:"Mole",kind:"stove",title:"Braise the mole turkey on the stovetop",detail:"The oven is at 450°F, so do this on the stove instead of Bayless's 325°F oven. Warm the mole to a simmer, nestle in the browned breast, cover, and keep it at the barest simmer, turning once. Pull at 150°F center, about 45–55 min. Check often.",needs:["w5","w6"]},
+ {id:"t15",day:"thu",t:30,dish:"Turkey",kind:"prep",title:"Turkey out, rest 30 min",detail:"Strain and skim the pan juices and whisk them into the gravy. Carrots come out when browned.",needs:["t10"]},
+ {id:"t16",day:"thu",t:35,dish:"Oven",kind:"oven",title:"Oven to 375°F: reheat stuffings + potato stacks",detail:"Stuffings uncovered (foil if they brown too fast), potato stacks in the tin. 25–30 min.",needs:["t4","t5","t15"]},
+ {id:"t17",day:"thu",t:35,dish:"Soup",kind:"stove",title:"Reheat the soup",detail:"Low heat, stir often, thin with broth if needed.",needs:["w7"]},
+ {id:"t18",day:"thu",t:50,dish:"Mac & cheese",kind:"stove",gf:true,title:"Start the GF mac and cheese",detail:"Boil the pasta water. Make the sauce with clean, separate tools. If you run out of burners, reheat the gravy in the microwave.",needs:["w12"]},
+ {id:"t19",day:"thu",t:60,dish:"Soup",kind:"serve",title:"Serve soup course",needs:["t17"]},
+ {id:"t20",day:"thu",t:65,dish:"Mac & cheese",kind:"stove",gf:true,title:"GF pasta in",detail:"8–10 min. Don't overcook: GF pasta turns mushy. Drain and fold into the sauce.",needs:["t18"]},
+ {id:"t21",day:"thu",t:70,dish:"Carving",kind:"prep",title:"Carve the turkey and slice the mole breast",detail:"Rest the mole breast 10 min, slice ½ inch, and spoon mole over it. Spoon cashew sauce over the carrots. Garnish the soup.",needs:["t15","t14","w11","t13"]},
+ {id:"t22",day:"thu",t:90,dish:"Dinner",kind:"serve",title:"Dinner"},
+];
+const byId=Object.fromEntries(STEPS.map(x=>[x.id,x]));
+if(!state.sched)state.sched={done:{},apps:"15:00",day:null};
+if(!state.tab)state.tab="list";
+const appsMin=()=>{const [h,m]=(state.sched.apps||"15:00").split(":").map(Number);return h*60+m};
+const at=x=>x.day==="wed"?x.t:appsMin()+x.t;
+const fmt=m=>{m=((m%1440)+1440)%1440;let h=Math.floor(m/60),mm=m%60;const ap=h>=12?"pm":"am";h=h%12||12;return h+":"+String(mm).padStart(2,"0")+" "+ap};
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const nowMin=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
+
+function renderSched(){
+  const v=$("schedView");v.innerHTML="";
+  const sc=state.sched;
+  const day=sc.day||(today()===THU?"thu":"wed");
+  const days=document.createElement("div");days.className="days";
+  for(const [k,l] of [["wed","Wed · prep"],["thu","Thu · cook"]]){
+    const b=document.createElement("button");b.className="toggle";b.textContent=l;b.setAttribute("aria-pressed",String(day===k));
+    b.onclick=()=>{sc.day=k;save();render()};days.appendChild(b);
+  }
+  v.appendChild(days);
+  if(day==="thu"){
+    const sh=document.createElement("label");sh.className="shift";
+    sh.innerHTML='Appetizers at <input type="time" step="900"> <span>(moves every Thursday step)</span>';
+    const inp=sh.querySelector("input");inp.value=sc.apps||"15:00";
+    inp.onchange=()=>{if(inp.value){sc.apps=inp.value;save();render()}};
+    v.appendChild(sh);
+  }
+  const steps=STEPS.filter(x=>x.day===day).sort((a,b)=>at(a)-at(b));
+  const isToday=today()===(day==="wed"?WED:THU);
+  const n=nowMin();
+  const next=steps.find(x=>!sc.done[x.id]);
+  if(next){
+    const c=document.createElement("div");c.className="card next";
+    const late=isToday&&at(next)<n-10;
+    c.innerHTML='<div class="lbl"></div><div class="what"></div>';
+    c.querySelector(".lbl").textContent=(late?"Behind · ":"Next · ")+fmt(at(next));
+    c.querySelector(".what").textContent=next.title;
+    if(late){c.style.borderLeftColor="var(--red)";c.querySelector(".lbl").style.color="var(--red)"}
+    v.appendChild(c);
+  }
+  let curSlot=null,card=null,nowShown=!isToday;
+  for(const x of steps){
+    const tm=at(x);
+    if(!nowShown&&tm>n){const nl=document.createElement("div");nl.className="nowline";nl.textContent="Now "+fmt(n);v.appendChild(nl);nowShown=true;curSlot=null}
+    if(tm!==curSlot){
+      curSlot=tm;
+      const sl=document.createElement("div");sl.className="slot";sl.textContent=fmt(tm);v.appendChild(sl);
+      card=document.createElement("div");card.className="card";v.appendChild(card);
+    }
+    const el=document.createElement("div");el.className="step"+(sc.done[x.id]?" done":"");
+    if(isToday&&!sc.done[x.id]&&next&&x.id===next.id)el.classList.add("now");
+    el.innerHTML='<div class="box"></div><div class="body"><div class="t"></div></div>';
+    el.querySelector(".t").textContent=x.title;
+    const body=el.querySelector(".body");
+    if(x.detail){const d=document.createElement("div");d.className="d";d.textContent=x.detail;body.appendChild(d)}
+    const meta=document.createElement("div");meta.className="meta";
+    const chip=(t,c)=>{const s=document.createElement("span");s.className="chip"+(c?" "+c:"");s.textContent=t;meta.appendChild(s)};
+    chip(x.dish);
+    if(x.kind==="oven")chip("Oven","oven");
+    if(x.kind==="stove")chip("Stove","stove");
+    if(x.gf)chip("GF care","gf");
+    body.appendChild(meta);
+    if(x.needs&&x.needs.length){
+      const open=x.needs.filter(id=>!sc.done[id]);
+      const nd=document.createElement("div");nd.className="need"+(open.length&&!sc.done[x.id]?" warn":"");
+      nd.textContent=(open.length&&!sc.done[x.id]?"⚠ Needs first: ":"Needs: ")+x.needs.map(id=>{const y=byId[id];return y.title+" ("+(y.day==="wed"?"Wed ":"")+fmt(at(y))+")"}).join(" · ");
+      body.appendChild(nd);
+    }
+    el.onclick=()=>{sc.done[x.id]=!sc.done[x.id];save();render()};
+    card.appendChild(el);
+  }
+  if(!nowShown){const nl=document.createElement("div");nl.className="nowline";nl.textContent="Now "+fmt(n);v.appendChild(nl)}
+  const reset=document.createElement("div");reset.className="center";
+  const rb=document.createElement("button");rb.className="btn ghost";rb.textContent="Uncheck this day's steps";
+  rb.onclick=()=>{if(rb.dataset.armed){steps.forEach(x=>delete sc.done[x.id]);save();render()}else{rb.dataset.armed=1;rb.textContent="Tap again to uncheck";setTimeout(()=>{rb.textContent="Uncheck this day's steps";delete rb.dataset.armed},3000)}};
+  reset.appendChild(rb);v.appendChild(reset);
+  const done=steps.filter(x=>sc.done[x.id]).length;
+  return [done,steps.length];
+}
+
+const renderList=render;
+render=function(){
+  renderList();
+  const sched=state.tab==="sched";
+  $("listView").hidden=sched;$("schedView").hidden=!sched;
+  document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===state.tab)));
+  if(sched){const [d,t]=renderSched();$("count").textContent=d+"/"+t;$("prog").style.width=(t?d/t*100:0)+"%"}
+};
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{state.tab=b.dataset.tab;save();render();window.scrollTo(0,0)});
+setInterval(()=>{if(state.tab==="sched"&&!document.hidden)render()},60000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)render()});
 
 save();render();
 window.appReady=true;
