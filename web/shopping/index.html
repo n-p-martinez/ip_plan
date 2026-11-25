@@ -399,8 +399,7 @@ const WED="2026-11-25", THU="2026-11-26";
 const H=(h,m)=>h*60+(m||0);
 /* Wednesday times are clock times. Thursday times are minutes relative to appetizers (default 3:00 pm). */
 const STEPS=[
- {id:"w1",day:"wed",t:H(10),dish:"Turkey",kind:"prep",title:"Spatchcock the turkey, then dry brine",detail:"Cut out the backbone and save it with the neck and giblets for gravy stock. Salt all over and under the skin, then refrigerate uncovered on a rack."},
- {id:"w2",day:"wed",t:H(10,15),dish:"Carrots",kind:"prep",title:"Soak cashews",detail:"1 cup in water. Skip if you have a high-speed blender."},
+ {id:"w1",day:"wed",t:H(10),dish:"Turkey",kind:"prep",title:"Spatchcock the turkey, then dry brine",detail:"Cut out the backbone and save it with the neck and giblets for gravy stock. For 12 lb, about 3 tbsp Diamond Crystal kosher salt (or 1½ tbsp Morton) all over and under the skin, then refrigerate uncovered on a rack."},
  {id:"w3",day:"wed",t:H(10,30),dish:"Mole",kind:"stove",title:"Start the mole",detail:"Broil tomatillos, toast sesame and bread, fry the chiles and soak them ~30 min, fry garlic, almonds and raisins. (Bayless steps 1–2)"},
  {id:"w4",day:"wed",t:H(11),dish:"Gravy",kind:"stove",title:"Gravy stock",detail:"Brown the backbone, neck and giblets, add onion, carrot, celery, broth, thyme and bay. Simmer 45 min, strain, skim, refrigerate.",needs:["w1"]},
  {id:"w5",day:"wed",t:H(11,30),dish:"Mole",kind:"stove",title:"Salt and brown the mole turkey breast",detail:"About 10 min. Cool, then refrigerate separately from the mole. Don't braise it today: reheated, it dries out."},
@@ -409,30 +408,31 @@ const STEPS=[
  {id:"w8",day:"wed",t:H(2+12),dish:"Calabaza",kind:"stove",title:"Calabaza en tacha (dessert)",detail:"About 2 hrs on the stovetop, then cools in its syrup overnight. Better made today."},
  {id:"w9",day:"wed",t:H(2+12,30),dish:"Bruschetta",kind:"oven",title:"Bake crostini",detail:"Slice the baguette ⅓ inch thick, brush with oil, bake at 400°F 10–12 min. Cool completely and store airtight."},
  {id:"w10",day:"wed",t:H(3+12),dish:"Stuffing",kind:"oven",gf:true,title:"Toast stuffing bread cubes",detail:"Cut the GF loaf FIRST on a clean board, then the regular loaf. ¾-inch cubes, 325°F for 12–17 min, separate pans. Store separately, labeled."},
- {id:"w11",day:"wed",t:H(4+12),dish:"Carrots",kind:"prep",title:"Blend cashew sauce",detail:"Cashews, lemon juice, 1 garlic clove, salt, and water to thin. Refrigerate.",needs:["w2"]},
+ {id:"w11",day:"wed",t:H(4+12),dish:"Carrots",kind:"prep",title:"Cashew sauce (if making ahead)",detail:"Per your recipe. Most cashew sauces keep 3–4 days in the fridge."},
  {id:"w12",day:"wed",t:H(7+12),dish:"Prep",kind:"prep",title:"Evening prep",detail:"Chop onions and celery for both stuffings (bag separately). Peel and cut carrots. Shred cheddar and Parmesan. Set out serving dishes and label the GF ones."},
 
- {id:"t1",day:"thu",t:-420,dish:"Turkey",kind:"prep",title:"Mojo on the turkey",detail:"Blend the mojo WITHOUT salt (the bird is brined). Rub it under the skin and on the underside only, keeping the skin dry. Back in the fridge, uncovered.",needs:["w1"]},
+ {id:"t1",day:"thu",t:-420,dish:"Turkey",kind:"prep",title:"Mojo on the turkey",detail:"Make the FULL mojo recipe (it's written for a 12–14 lb bird), WITHOUT salt since the bird is brined. Rub it under the skin and on the underside only, keeping the skin dry. Back in the fridge, uncovered.",needs:["w1"]},
  {id:"t2",day:"thu",t:-360,dish:"Stuffing",kind:"stove",gf:true,title:"Assemble both stuffings",detail:"GF first with clean tools: sauté onions and celery in oil, add sage, thyme, salt and pepper, then GF cubes, GF broth and eggs. Wash everything, then make the regular one. Grease two baking dishes.",needs:["w10","w12"]},
  {id:"t3",day:"thu",t:-300,dish:"Potatoes",kind:"prep",title:"Assemble potato stacks",detail:"Slice potatoes very thin, toss with melted butter, garlic, thyme, Parmesan, salt and pepper, and stack in a greased 12-cup muffin tin."},
- {id:"t4",day:"thu",t:-240,dish:"Stuffing",kind:"oven",title:"Bake both stuffings at 325°F",detail:"Covered 30 min, uncovered 10. They get reheated later.",needs:["t2"]},
- {id:"t5",day:"thu",t:-180,dish:"Potatoes",kind:"oven",title:"Bake potato stacks at 400°F",detail:"50–60 min, until a knife slides through and the edges are golden. Leave them in the tin.",needs:["t3"]},
+ {id:"t4",day:"thu",t:-255,dish:"Stuffing",kind:"oven",title:"Bake both stuffings at 325°F",detail:"Covered 30 min, uncovered 10. They get reheated later.",needs:["t2"]},
+ {id:"t5",day:"thu",t:-195,dish:"Potatoes",kind:"oven",title:"Bake potato stacks at 400°F",detail:"50–60 min (must be out by 1:45 so the oven can heat for the turkey), until a knife slides through and the edges are golden. Leave them in the tin.",needs:["t3"]},
  {id:"t6",day:"thu",t:-120,dish:"Turkey",kind:"prep",title:"Turkey out to temper",detail:"Set it on a rack over a rimmed sheet. Pat the skin very dry, rub with oil. Toss the carrots with oil and salt on a second sheet pan.",needs:["t1"]},
  {id:"t7",day:"thu",t:-90,dish:"Bruschetta",kind:"prep",title:"Make the bruschetta topping",detail:"Diced tomatoes, garlic, basil, olive oil and salt. Let it sit at room temp."},
- {id:"t8",day:"thu",t:-60,dish:"Gravy",kind:"stove",title:"Make the gravy base",detail:"Butter + flour roux (GF flour if needed), then whisk in the stock and simmer to reduce. Hold covered. The drippings go in later.",needs:["w4"]},
- {id:"t9",day:"thu",t:-50,dish:"Oven",kind:"oven",title:"Oven to 450°F",detail:"Potato stacks are out. Set racks for the turkey (middle) and carrots (lower).",needs:["t5"]},
- {id:"t10",day:"thu",t:-30,dish:"Turkey",kind:"oven",title:"Turkey in at 450°F",detail:"A 6–7 lb spatchcocked bird takes ~50–65 min. Start checking at 3:15. Done at 150°F breast and 165°F thigh.",needs:["t6","t9"]},
+ {id:"t8",day:"thu",t:-40,dish:"Gravy",kind:"stove",title:"Make the gravy base",detail:"Butter + flour roux (GF flour if needed), then whisk in the stock and simmer to reduce. Hold covered. The drippings go in later.",needs:["w4"]},
+ {id:"t9",day:"thu",t:-75,dish:"Oven",kind:"oven",title:"Oven to 450°F",detail:"Potato stacks are out. Set racks for the turkey (middle) and carrots (lower).",needs:["t5"]},
+ {id:"t10",day:"thu",t:-55,dish:"Turkey",kind:"oven",title:"Turkey in at 450°F",detail:"A 12-lb spatchcocked bird takes about 80 min. Start checking 65 min in. Done at 150°F breast and 165°F thigh. Rotate the pan once.",needs:["t6","t9"]},
  {id:"t11",day:"thu",t:-15,dish:"Bruschetta",kind:"prep",title:"Top the crostini",detail:"Assemble right before serving so they stay crisp.",needs:["w9","t7"]},
  {id:"t12",day:"thu",t:0,dish:"Appetizers",kind:"serve",title:"Serve bruschetta"},
  {id:"t13",day:"thu",t:0,dish:"Carrots",kind:"oven",title:"Carrots in on the lower rack",detail:"25–30 min at 450°F alongside the turkey. Toss once.",needs:["t6"]},
  {id:"t14",day:"thu",t:10,dish:"Mole",kind:"stove",title:"Braise the mole turkey on the stovetop",detail:"The oven is at 450°F, so do this on the stove instead of Bayless's 325°F oven. Warm the mole to a simmer, nestle in the browned breast, cover, and keep it at the barest simmer, turning once. Pull at 150°F center, about 45–55 min. Check often.",needs:["w5","w6"]},
  {id:"t15",day:"thu",t:30,dish:"Turkey",kind:"prep",title:"Turkey out, rest 30 min",detail:"Strain and skim the pan juices and whisk them into the gravy. Carrots come out when browned.",needs:["t10"]},
  {id:"t16",day:"thu",t:35,dish:"Oven",kind:"oven",title:"Oven to 375°F: reheat stuffings + potato stacks",detail:"Stuffings uncovered (foil if they brown too fast), potato stacks in the tin. 25–30 min.",needs:["t4","t5","t15"]},
- {id:"t17",day:"thu",t:35,dish:"Soup",kind:"stove",title:"Reheat the soup",detail:"Low heat, stir often, thin with broth if needed.",needs:["w7"]},
- {id:"t18",day:"thu",t:50,dish:"Mac & cheese",kind:"stove",gf:true,title:"Start the GF mac and cheese",detail:"Boil the pasta water. Make the sauce with clean, separate tools. If you run out of burners, reheat the gravy in the microwave.",needs:["w12"]},
+ {id:"t17",day:"thu",t:35,dish:"Soup",kind:"stove",title:"Reheat the soup",detail:"Low heat, stir often, thin with broth if needed. Its burner goes to the mac and cheese sauce after serving.",needs:["w7"]},
+ {id:"t18",day:"thu",t:-45,dish:"Mac & cheese",kind:"stove",gf:true,title:"Make the GF mac and cheese sauce",detail:"Clean, separate tools. Cover and hold off the heat. Burners are free now, and from 3:10 to 4:00 all four are busy (mole, soup, gravy, pasta water).",needs:["w12"]},
+ {id:"t18b",day:"thu",t:50,dish:"Mac & cheese",kind:"stove",gf:true,title:"Boil water for the GF pasta",detail:"4th burner: mole, soup and gravy have the other three."},
  {id:"t19",day:"thu",t:60,dish:"Soup",kind:"serve",title:"Serve soup course",needs:["t17"]},
- {id:"t20",day:"thu",t:65,dish:"Mac & cheese",kind:"stove",gf:true,title:"GF pasta in",detail:"8–10 min. Don't overcook: GF pasta turns mushy. Drain and fold into the sauce.",needs:["t18"]},
- {id:"t21",day:"thu",t:70,dish:"Carving",kind:"prep",title:"Carve the turkey and slice the mole breast",detail:"Rest the mole breast 10 min, slice ½ inch, and spoon mole over it. Spoon cashew sauce over the carrots. Garnish the soup.",needs:["t15","t14","w11","t13"]},
+ {id:"t20",day:"thu",t:65,dish:"Mac & cheese",kind:"stove",gf:true,title:"GF pasta in, rewarm the sauce",detail:"8–10 min. Don't overcook: GF pasta turns mushy. The soup is served, so rewarm the sauce on its burner, then fold in the drained pasta.",needs:["t18","t18b","t19"]},
+ {id:"t21",day:"thu",t:70,dish:"Carving",kind:"prep",title:"Carve the turkey and slice the mole breast",detail:"Rest the mole breast 10 min, slice ½ inch, and spoon mole over it. Spoon cashew sauce over the carrots. Label the mole as containing wheat (bread).",needs:["t15","t14","w11","t13"]},
  {id:"t22",day:"thu",t:90,dish:"Dinner",kind:"serve",title:"Dinner"},
 ];
 const byId=Object.fromEntries(STEPS.map(x=>[x.id,x]));
@@ -492,7 +492,7 @@ function renderSched(){
     const meta=document.createElement("div");meta.className="meta";
     const chip=(t,c)=>{const s=document.createElement("span");s.className="chip"+(c?" "+c:"");s.textContent=t;meta.appendChild(s)};
     chip(x.dish);
-    if(x.kind==="oven")chip("Oven","oven");
+    if(x.kind==="oven"&&x.dish!=="Oven")chip("Oven","oven");
     if(x.kind==="stove")chip("Stove","stove");
     if(x.gf)chip("GF care","gf");
     body.appendChild(meta);
