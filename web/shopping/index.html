@@ -105,6 +105,18 @@ textarea{height:72px;font-family:var(--f-num);font-size:12px;margin-bottom:8px;r
 .nowline{display:flex;align-items:center;gap:8px;margin:14px 2px 0;font-family:var(--f-num);font-size:12px;color:var(--blue)}
 .nowline::after{content:"";flex:1;height:2px;background:var(--blue)}
 body.hide .step.done{display:none}
+.step .t{cursor:pointer}
+.step .box{cursor:pointer}
+.step{cursor:default}
+.more{padding:6px 0 0;font-size:13px}
+.det{margin-top:8px;font-size:14px;line-height:1.45}
+.det ol{margin:8px 0 0;padding-left:20px}
+.det ol li{display:list-item;border:0;padding:0 0 0 2px;margin:5px 0;gap:0}
+.det ol li::marker{font-family:var(--f-num);font-size:12px;color:var(--muted)}
+.gear{background:var(--soft);border-radius:8px;padding:8px 10px}
+.defer{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);color:var(--muted);font-size:13px}
+.btn.small{padding:6px 12px;font-size:13px}
+.chip.moved{background:var(--ink);color:var(--surface)}
 </style>
 </head><body>
 <header>
@@ -399,53 +411,208 @@ const WED="2026-11-25", THU="2026-11-26";
 const H=(h,m)=>h*60+(m||0);
 /* Wednesday times are clock times. Thursday times are minutes relative to appetizers (default 3:00 pm). */
 const STEPS=[
- {id:"w1",day:"wed",t:H(10),dish:"Turkey",kind:"prep",title:"Spatchcock the turkey, then dry brine",detail:"Cut out the backbone and save it with the neck and giblets for gravy stock. For 12 lb, about 3 tbsp Diamond Crystal kosher salt (or 1½ tbsp Morton) all over and under the skin, then refrigerate uncovered on a rack."},
- {id:"w3",day:"wed",t:H(10,30),dish:"Mole",kind:"stove",title:"Start the mole",detail:"Broil tomatillos, toast sesame and bread, fry the chiles and soak them ~30 min, fry garlic, almonds and raisins. (Bayless steps 1–2)"},
- {id:"w4",day:"wed",t:H(11),dish:"Gravy",kind:"stove",title:"Gravy stock",detail:"Brown the backbone, neck and giblets, add onion, carrot, celery, broth, thyme and bay. Simmer 45 min, strain, skim, refrigerate.",needs:["w1"]},
- {id:"w5",day:"wed",t:H(11,30),dish:"Mole",kind:"stove",title:"Salt and brown the mole turkey breast",detail:"About 10 min. Cool, then refrigerate separately from the mole. Don't braise it today: reheated, it dries out."},
- {id:"w6",day:"wed",t:H(12),dish:"Mole",kind:"stove",title:"Blend, strain and simmer the mole",detail:"Fry the chile purée, then the tomatillo purée, add water, simmer 45 min, season. Cool and refrigerate. It gets better overnight. (Bayless steps 3–4)",needs:["w3"]},
- {id:"w7",day:"wed",t:H(12,30),dish:"Soup",kind:"oven",title:"Acorn squash soup",detail:"Roast the squash, cook and blend the soup. Cool and refrigerate. Don't garnish yet."},
- {id:"w8",day:"wed",t:H(2+12),dish:"Calabaza",kind:"stove",title:"Calabaza en tacha (dessert)",detail:"About 2 hrs on the stovetop, then cools in its syrup overnight. Better made today."},
- {id:"w9",day:"wed",t:H(2+12,30),dish:"Bruschetta",kind:"oven",title:"Bake crostini",detail:"Slice the French bread ¼ inch thick, brush both sides lightly with 1 tbsp olive oil, toast at 400°F 5–10 min, turning halfway. Thin slices brown fast, so check at 5 min. Cool completely and store airtight."},
- {id:"w10",day:"wed",t:H(3+12),dish:"Stuffing",kind:"oven",gf:true,title:"Toast stuffing bread cubes",detail:"Cut the GF loaf FIRST on a clean board, then the regular loaf. ¾-inch cubes, 325°F for 12–17 min, separate pans. Store separately, labeled."},
- {id:"w13",day:"wed",t:H(4+12),dish:"Potatoes",kind:"oven",title:"Potato stacks: assemble and first bake",detail:"Bon Appétit mini pommes Anna. Slice the potatoes thin on a mandoline and layer in a 12-cup muffin pan with the garlic-thyme butter. Bake covered at 350°F about 35 min, until tender. Invert onto a baking sheet, cool, and refrigerate (good for up to a day)."},
- {id:"w11",day:"wed",t:H(5+12),dish:"Carrots",kind:"prep",title:"Cashew sauce (if making ahead)",detail:"Per your recipe. Most cashew sauces keep 3–4 days in the fridge."},
- {id:"w12",day:"wed",t:H(7+12),dish:"Prep",kind:"prep",title:"Evening prep",detail:"Chop onions and celery for both stuffings (bag separately). Peel and cut carrots. Shred cheddar and Parmesan. Set out serving dishes and label the GF ones."},
+ {id:"w1",day:"wed",t:H(10),dish:"Turkey",kind:"prep",title:"Spatchcock the turkey, then dry brine",
+  noDefer:"Can't move: the dry brine needs about 24 hours.",
+  gear:"Poultry shears · rimmed half-sheet pan (18×13 in) + wire rack · paper towels · a cleared fridge shelf until tomorrow afternoon.",
+  how:["Remove the neck and giblets from the cavity. Pat the bird dry.","Breast side down: cut along both sides of the backbone with the shears, from tail to neck. Save the backbone, neck and giblets in a quart bag for the gravy stock.","Flip it breast side up and press hard on the breastbone until it cracks and the bird lies flat. Tuck the wing tips behind the breast.","Salt all over, about 3 tbsp Diamond Crystal (or 1½ tbsp Morton) for 12 lb. Gently loosen the skin over the breast and thighs and get some salt under it.","Set it on the rack in the sheet pan and refrigerate UNCOVERED. The air-dried skin is what makes it crisp."]},
+ {id:"w3",day:"wed",t:H(10,30),dish:"Mole",kind:"stove",title:"Start the mole (half batch)",
+  defer:{t:-420,note:"Thursday 8:00. Bayless says the mole gets better after a night in the fridge, and this adds about 3 hours of stove work Thursday morning."},
+  gear:"Rimmed sheet pan for broiling · small skillet · 5–6 qt Dutch oven or deep heavy pot (frying the purée spatters) · heatproof bowl for soaking the chiles.",
+  how:["Use half of every amount on Bayless's card.","Broil the tomatillos until blackened and soft, about 10 min total, turning once.","Toast the sesame seeds in a dry skillet until golden (save a spoonful for garnish). Toast the bread slice.","Stem and seed the chiles. Fry them briefly in lard, a few seconds per side, until aromatic. Don't let them blacken.","Soak the chiles in hot water about 30 min.","Fry the garlic, almonds and raisins in the same fat until the raisins puff."]},
+ {id:"w4",day:"wed",t:H(11),dish:"Gravy",kind:"stove",title:"Gravy stock (half batch)",
+  defer:{t:-390,note:"Thursday 8:30, about 1 hour on the stovetop. It shares burners with the stuffing sauté at 9:00."},
+  gear:"3-qt saucepan · fine-mesh strainer · 1-qt measuring cup · 1-qt container. Makes about 2½ cups.",
+  how:["Chop the backbone, neck and giblets into rough pieces.","Heat ½ tbsp oil in the saucepan over high heat. Brown the turkey pieces, about 5 min.","Add the gravy onion, carrot and 2 celery stalks, roughly chopped. Cook until they brown in spots, about 5 min.","Add 3 cups broth, about 4 thyme sprigs and 1 bay leaf. Bring to a boil, then lower to a bare simmer for 45 min.","Strain into the measuring cup and discard the solids. Cool, refrigerate, and lift off the fat tomorrow."]},
+ {id:"w5",day:"wed",t:H(11,30),dish:"Mole",kind:"stove",title:"Salt and brown the mole turkey breast",
+  defer:{t:-360,note:"Thursday 9:00, about 15 min."},
+  gear:"The mole's Dutch oven (before frying the purée) or a 12-inch skillet · a covered dish or gallon zip bag for storage.",
+  how:["Pat the breast dry and salt it on all sides.","Brown it in a little lard over medium-high heat, about 10 min total, turning to color every side.","Cool it, then refrigerate it separately from the mole. Don't braise it today: reheated, it dries out."]},
+ {id:"w6",day:"wed",t:H(12),dish:"Mole",kind:"stove",title:"Blend, strain and simmer the mole",
+  defer:{t:-330,note:"Thursday 9:30. The mole simmers about 45 min plus blending time."},
+  gear:"Blender · fine-mesh strainer · the 5–6 qt Dutch oven · a 1-qt container (a half batch makes about 3½ cups).",
+  how:["Blend the drained chiles with enough soaking liquid to purée. Strain.","Blend the tomatillos, sesame, bread, fried garlic, almonds, raisins, spices and chocolate until smooth. Strain.","Heat a little lard in the Dutch oven until very hot. Add the chile purée and fry it, stirring constantly, until it darkens and thickens, 10–15 min. Use a lid as a shield, because it spatters.","Add the tomatillo purée and cook 5–10 min more.","Add water (half of the card's 6 cups, so 3 cups) and simmer 45 min. Season with salt and sugar.","Cool it and refrigerate it in the container."],
+  needs:["w3"]},
+ {id:"w7",day:"wed",t:H(12,30),dish:"Soup",kind:"oven",title:"Acorn squash soup",
+  defer:{t:-420,note:"Thursday 8:00. The roast uses the oven until about 8:45, well before the stuffings at 11:00. The recipe says the soup improves as it sits, so today is better."},
+  gear:"Half-sheet pan + parchment · foil · 5–6 qt pot or Dutch oven · blender (fill it no more than half full and vent the lid) or an immersion blender · a 2-qt container. Makes about 6–7 cups.",
+  how:["Oven to 400°F. Halve the squash lengthwise and scoop out the seeds. Brush the cut sides with oil, salt and pepper, and lay them cut side down on the sheet. Wrap the garlic in foil with oil and salt and put it on the sheet.","Roast 35–45 min, until a fork slides in. Cool.","Squeeze the garlic out of its skins. Scoop out the squash and measure 2½ cups.","In the pot over medium heat, cook the onion, carrots and salt in oil 5–8 min, until soft. Stir in the nutmeg, cayenne and pepper.","Add the squash, garlic, 4 cups broth and thyme. Simmer 20 min.","Cool slightly, then blend with the lemon juice and maple syrup until smooth, in batches if needed. Taste and adjust.","Cool and refrigerate. Garnish only when serving."]},
+ {id:"w8",day:"wed",t:H(14),dish:"Calabaza",kind:"stove",title:"Calabaza en tacha (dessert)",
+  defer:{t:-330,note:"Thursday 9:30. It takes about 2 hours plus cooling, so it'll be served warm or at room temperature instead of chilled overnight."},
+  gear:"Wide 5–7 qt Dutch oven or braiser with a lid · heavy knife · a 3-qt container or covered 9×13 dish for storing it in its syrup.",
+  how:["Crack the Hubbard (drop it in a bag onto concrete, or microwave 3–4 min and cut with a heavy knife). Take about a third, 2½–3 lb.","Scrape out the seeds and strings. Cut into palm-sized wedges, skin on, and score the flesh in a crosshatch.","Dissolve the piloncillo (or 2 cups packed dark brown sugar + 1 tbsp molasses) in 2 cups water with the cinnamon, orange peel and cloves, about 10 min.","Lay the wedges flesh side down. Cover and keep at a bare simmer 20 min.","Flip them skin side down. Cover and simmer 30–40 min more, basting every 10 min, until a knife slides in.","Uncover and reduce the syrup 10–15 min. Remove the whole spices.","Cool in the syrup and refrigerate."]},
+ {id:"w9",day:"wed",t:H(14,30),dish:"Bruschetta",kind:"oven",title:"Bake crostini",
+  defer:{t:-150,note:"Thursday 12:30, after the stuffings and before the oven heats for the turkey."},
+  gear:"Serrated knife · 2 rimmed half-sheet pans · pastry brush · gallon zip bag or airtight tin.",
+  how:["Oven to 400°F.","Slice the French bread ¼ inch thick.","Brush both sides lightly with 1 tbsp olive oil, total. Lay in a single layer.","Toast 5–10 min, turning halfway. Thin slices brown fast, so check at 5 min.","Cool completely on the pans before storing, or they'll go soft."]},
+ {id:"w10",day:"wed",t:H(15),dish:"Stuffing",kind:"oven",gf:true,title:"Toast stuffing bread cubes",
+  defer:{t:-435,note:"Thursday 7:45. They need to cool before you assemble the stuffings at 9:00."},
+  gear:"2 half-sheet pans per loaf (a 1-lb loaf makes about 10–12 cups of cubes, in a single layer) · a clean cutting board and knife · gallon zip bags labeled GF and REGULAR.",
+  how:["Oven to 325°F.","Cut the GF loaf FIRST, on a freshly washed board, into ¾-inch cubes. Spread on their own pans.","Wash the board and knife, then cube the regular loaf.","Toast 12–17 min, until dry and crisp. Keep the GF pans on a separate rack, or bake them first.","Cool, then bag separately and label."]},
+ {id:"w13",day:"wed",t:H(16),dish:"Potatoes",kind:"oven",title:"Potato stacks: assemble and first bake",
+  defer:{t:-195,note:"Thursday 11:45, right after the stuffings. Hold them in the fridge after baking."},
+  gear:"Standard 12-cup muffin pan · mandoline (use the guard) · foil to cover · half-sheet pan lined with parchment for inverting · fridge space for the sheet.",
+  how:["Oven to 350°F.","Melt the butter with the minced garlic, chopped thyme, 2 tsp kosher salt and pepper.","Brush the muffin cups with the butter and put a small thyme sprig in the bottom of each.","Slice the potatoes very thin on the mandoline.","Layer slices into each cup, brushing with butter every few layers, until slightly above the rim (they shrink).","Cover the pan tightly with foil and bake about 35 min, until a knife slides through.","Invert onto the parchment-lined sheet. Cool, cover and refrigerate."]},
+ {id:"w11",day:"wed",t:H(17),dish:"Carrots",kind:"prep",title:"Cashew sauce (if making ahead)",
+  defer:{t:-300,note:"Thursday 10:00."},
+  gear:"Blender · pint container.",
+  how:["Follow your recipe. Most cashew sauces keep 3–4 days in the fridge. Thin with water before serving."]},
+ {id:"w12",day:"wed",t:H(19),dish:"Prep",kind:"prep",title:"Evening prep",
+  defer:{t:-435,note:"Thursday 7:45. The onions and celery have to be ready for the stuffings at 9:00."},
+  gear:"Quart and gallon zip bags · labels or tape and marker. The 4 stuffing onions and 6 celery stalks make about 7 cups chopped, bagged by recipe.",
+  how:["Dice 4 onions and 6 celery stalks for the stuffings. Bag them separately for the GF and regular batches.","Peel the carrots and cut them for roasting. Store in a bag in the fridge.","Shred the cheddar and grate the Parmesan for the mac and cheese (quart bag), plus 1 oz Parmesan for the bruschetta.","Set out serving dishes and spoons. Label the GF dishes and give them their own spoons.","Check fridge space for tomorrow: the turkey sheet, the stuffing dishes and the potato sheet all need room."]},
 
- {id:"t1",day:"thu",t:-420,dish:"Turkey",kind:"prep",title:"Mojo on the turkey",detail:"Make the FULL mojo recipe (it's written for a 12–14 lb bird), WITHOUT salt since the bird is brined. Rub it under the skin and on the underside only, keeping the skin dry. Back in the fridge, uncovered.",needs:["w1"]},
- {id:"t2",day:"thu",t:-360,dish:"Stuffing",kind:"stove",gf:true,title:"Assemble both stuffings",detail:"GF first with clean tools: sauté onions and celery in oil, add sage, thyme, salt and pepper, then GF cubes, GF broth and eggs. Wash everything, then make the regular one. Grease two baking dishes.",needs:["w10","w12"]},
-  {id:"t4",day:"thu",t:-240,dish:"Stuffing",kind:"oven",title:"Bake both stuffings at 325°F",detail:"Covered 30 min, uncovered 10. They get reheated later.",needs:["t2"]},
- {id:"t6",day:"thu",t:-120,dish:"Turkey",kind:"prep",title:"Turkey out to temper",detail:"Set it on a rack over a rimmed sheet. Pat the skin very dry, rub with oil. Toss the carrots with oil and salt on a second sheet pan.",needs:["t1"]},
- {id:"t7",day:"thu",t:-90,dish:"Bruschetta",kind:"prep",title:"Prep the bruschetta topping",detail:"Dice 8 romas, chop ⅓ cup basil, mince 2 garlic cloves, grate 1 oz Parmesan. Keep the tomatoes separate and refrigerated. Don't dress them yet, because salt pulls out their juice."},
- {id:"t8",day:"thu",t:-40,dish:"Gravy",kind:"stove",title:"Make the gravy base",detail:"Butter + flour roux (GF flour if needed), then whisk in the stock and simmer to reduce. Hold covered. The drippings go in later.",needs:["w4"]},
- {id:"t9",day:"thu",t:-75,dish:"Oven",kind:"oven",title:"Oven to 450°F",detail:"Stuffings are out. Set racks for the turkey (middle) and carrots (lower).",needs:["t4"]},
- {id:"t10",day:"thu",t:-55,dish:"Turkey",kind:"oven",title:"Turkey in at 450°F",detail:"A 12-lb spatchcocked bird takes about 80 min. Start checking 65 min in. Done at 150°F breast and 165°F thigh. Rotate the pan once.",needs:["t6","t9"]},
- {id:"t11",day:"thu",t:-15,dish:"Bruschetta",kind:"prep",title:"Dress the topping and top the crostini",detail:"Toss tomatoes, basil, Parmesan and garlic. Mix in 1 tbsp balsamic, 2 tsp olive oil, ¼ tsp kosher salt, ¼ tsp pepper. Spoon onto the crostini and serve right away.",needs:["w9","t7"]},
+ {id:"t1",day:"thu",t:-420,dish:"Turkey",kind:"prep",title:"Mojo on the turkey",
+  gear:"Mortar and pestle (or a mini food processor) · small bowl.",
+  how:["Make the FULL mojo recipe, which is written for a 12–14 lb bird, but leave out its salt since the bird is brined.","Mash 6 garlic cloves with ½ tsp oregano, ½ tsp cumin and ¼ tsp pepper into a paste.","Stir in ¼ cup olive oil and ¼ cup sour orange juice (or the juice of 1 orange + ½ lemon).","Rub it inside the cavity and under the skin of the breast and thighs. Keep it off the top of the skin.","Back in the fridge, uncovered."],
+  needs:["w1"]},
+ {id:"t2",day:"thu",t:-360,dish:"Stuffing",kind:"stove",gf:true,title:"Assemble both stuffings",
+  gear:"12-inch skillet (or a 10-inch, in batches) · large mixing bowl · two 3-qt baking dishes (9×13 works), greased · separate spoons for GF.",
+  how:["GF batch first, with clean tools: heat 3 tbsp olive oil over medium. Cook 2 onions and 3 celery stalks 8–10 min, until soft.","Stir in 1 tsp chopped sage, 1 tsp dried thyme, ¾ tsp salt and pepper.","In the bowl, combine with the GF cubes, 2 cups GF broth and 2 beaten eggs. Spread in a greased dish and label it GF.","Wash the skillet, bowl and spoons. Repeat with the regular bread.","Cover both with foil and refrigerate until 11:00."],
+  needs:["w10","w12"]},
+ {id:"t4",day:"thu",t:-240,dish:"Stuffing",kind:"oven",title:"Bake both stuffings at 325°F",
+  gear:"Both dishes, foil-covered, side by side on one rack if they fit.",
+  how:["Oven to 325°F.","Bake covered 30 min, then uncovered 10 min, until the tops are crisp.","Rest on the counter, loosely covered. They get reheated at 3:30."],
+  needs:["t2"]},
+ {id:"t6",day:"thu",t:-120,dish:"Turkey",kind:"prep",title:"Turkey out to temper; prep the carrots",
+  gear:"The turkey's sheet pan + rack · a second half-sheet pan for the carrots (2 lb, single layer).",
+  how:["Take the turkey out of the fridge. Pat the skin very dry, brush it with olive oil, and add pepper (no salt; it's brined).","Toss the carrots with oil and salt on their sheet pan, per your recipe."],
+  needs:["t1"]},
+ {id:"t7",day:"thu",t:-90,dish:"Bruschetta",kind:"prep",title:"Prep the bruschetta topping",
+  gear:"2-qt bowl (8 romas make about 4 cups diced) · small bowl for the dressing.",
+  how:["Dice 8 roma tomatoes. Chop ⅓ cup basil. Mince 2 garlic cloves. Grate 1 oz Parmesan.","Keep the tomatoes in the fridge and the rest separate. Don't salt or dress anything yet, because salt pulls out the tomatoes' juice.","Whisk 1 tbsp balsamic, 2 tsp olive oil, ¼ tsp kosher salt and ¼ tsp pepper in the small bowl."]},
+ {id:"t9",day:"thu",t:-85,dish:"Oven",kind:"oven",title:"Oven to 425°F",
+  how:["The stuffings are out. Put one rack in the middle for the turkey and one lower for the carrots.","It stays at 425°F all afternoon: turkey, then carrots, then the potato stacks and stuffing reheat."],
+  needs:["t4"]},
+ {id:"t18",day:"thu",t:-75,dish:"Mac & cheese",kind:"stove",gf:true,title:"Make the GF mac and cheese sauce base",
+  gear:"3-qt saucepan · whisk · clean, separate GF spoon.",
+  how:["Over medium heat, melt ¼ cup butter.","Whisk in 3 tbsp GF flour, ¼ tsp salt, ¼ tsp garlic powder and ⅛ tsp pepper.","Whisking constantly, slowly add 2 cups whole milk.","When it boils, lower the heat and simmer 1 min, stirring.","Take it off the heat and cover. Don't add the cheese yet, because it holds better without it. The cheese goes in at 4:05."],
+  needs:["w12"]},
+ {id:"t10",day:"thu",t:-65,dish:"Turkey",kind:"oven",title:"Turkey in at 425°F",
+  gear:"Instant-read thermometer.",
+  how:["Middle rack. The recipe roasts a 12–14 lb spatchcocked bird about 90 min.","Rotate the pan about halfway through.","Start checking 70 min in, in the thickest part of the thigh and the breast. The recipe's target is 165°F."],
+  needs:["t6","t9"]},
+ {id:"t8",day:"thu",t:-40,dish:"Gravy",kind:"stove",title:"Make the gravy base",
+  gear:"2-qt saucepan · whisk.",
+  how:["Lift the fat off the stock.","Melt 1½ tbsp butter over medium-high heat. Add 2 tbsp flour (GF flour if needed) and stir constantly until golden, about 3 min.","Whisking, add the stock in a thin, steady stream.","Simmer until reduced to about 2 cups, about 20 min. Season, cover and keep it on the lowest heat."],
+  needs:["w4"]},
+ {id:"t11",day:"thu",t:-15,dish:"Bruschetta",kind:"prep",title:"Dress the topping and top the crostini",
+  gear:"Platter · slotted spoon (leaves the juice behind).",
+  how:["Drain any liquid off the tomatoes.","Toss the tomatoes, basil, Parmesan and garlic with the dressing.","Spoon onto the crostini with the slotted spoon and serve right away."],
+  needs:["w9","t7"]},
  {id:"t12",day:"thu",t:0,dish:"Appetizers",kind:"serve",title:"Serve bruschetta"},
- {id:"t13",day:"thu",t:0,dish:"Carrots",kind:"oven",title:"Carrots in on the lower rack",detail:"25–30 min at 450°F alongside the turkey. Toss once.",needs:["t6"]},
- {id:"t14",day:"thu",t:10,dish:"Mole",kind:"stove",title:"Braise the mole turkey on the stovetop",detail:"The oven is at 450°F, so do this on the stove instead of Bayless's 325°F oven. Warm the mole to a simmer, nestle in the browned breast, cover, and keep it at the barest simmer, turning once. Pull at 150°F center, about 45–55 min. Check often.",needs:["w5","w6"]},
- {id:"t15",day:"thu",t:30,dish:"Turkey",kind:"prep",title:"Turkey out, rest 30 min",detail:"Strain and skim the pan juices and whisk them into the gravy. Carrots come out when browned.",needs:["t10"]},
- {id:"t16",day:"thu",t:35,dish:"Oven",kind:"oven",title:"Oven to 425°F: crisp potato stacks + reheat stuffings",detail:"Potato stacks straight from the fridge on their sheet, 25–30 min, until crisp. Stuffings on the other rack, covered with foil so they don't scorch at 425°F. Uncover for the last 5 min.",needs:["t4","w13","t15"]},
- {id:"t17",day:"thu",t:35,dish:"Soup",kind:"stove",title:"Reheat the soup",detail:"Low heat, stir often, thin with broth if needed. Its burner goes to the mac and cheese sauce after serving.",needs:["w7"]},
- {id:"t18",day:"thu",t:-45,dish:"Mac & cheese",kind:"stove",gf:true,title:"Make the GF mac and cheese sauce",detail:"Clean, separate tools. Cover and hold off the heat. Burners are free now, and from 3:10 to 4:00 all four are busy (mole, soup, gravy, pasta water).",needs:["w12"]},
- {id:"t18b",day:"thu",t:50,dish:"Mac & cheese",kind:"stove",gf:true,title:"Boil water for the GF pasta",detail:"4th burner: mole, soup and gravy have the other three."},
- {id:"t19",day:"thu",t:60,dish:"Soup",kind:"serve",title:"Serve soup course",needs:["t17"]},
- {id:"t20",day:"thu",t:65,dish:"Mac & cheese",kind:"stove",gf:true,title:"GF pasta in, rewarm the sauce",detail:"8–10 min. Don't overcook: GF pasta turns mushy. The soup is served, so rewarm the sauce on its burner, then fold in the drained pasta.",needs:["t18","t18b","t19"]},
- {id:"t21",day:"thu",t:70,dish:"Carving",kind:"prep",title:"Carve the turkey and slice the mole breast",detail:"Rest the mole breast 10 min, slice ½ inch, and spoon mole over it. Spoon cashew sauce over the carrots. Label the mole as containing wheat (bread).",needs:["t15","t14","w11","t13"]},
+ {id:"t13",day:"thu",t:0,dish:"Carrots",kind:"oven",title:"Carrots in on the lower rack",
+  how:["25–30 min at 425°F alongside the turkey, tossing once (adjust to your recipe).","Take them out when browned and tender. They're fine warm."],
+  needs:["t6"]},
+ {id:"t14",day:"thu",t:10,dish:"Mole",kind:"stove",title:"Braise the mole turkey on the stovetop",
+  gear:"4–5 qt Dutch oven with a lid, or a deep 12-inch skillet with a lid · instant-read thermometer.",
+  how:["The oven is busy, so this goes on the stove instead of Bayless's 325°F oven.","Warm the mole to a simmer, thinning with a little water if it's too thick to coat a spoon loosely.","Nestle in the browned breast. Cover and keep it at the barest simmer, turning it once.","Pull it at 150°F in the center (Bayless's number), about 45–55 min. It takes longer straight from the fridge.","Rest 10 min, covered."],
+  needs:["w5","w6"]},
+ {id:"t15",day:"thu",t:25,dish:"Turkey",kind:"prep",title:"Turkey out, rest 20–30 min",
+  gear:"Cutting board with a juice groove · fat separator or 2-cup measure · fine-mesh strainer.",
+  how:["Move the rack and turkey to the cutting board area. Rest 20–30 min uncovered so the skin stays crisp.","Strain the pan juices, skim off the fat, and whisk the juices into the gravy."],
+  needs:["t10"]},
+ {id:"t16",day:"thu",t:30,dish:"Oven",kind:"oven",title:"Crisp the potato stacks + reheat the stuffings",
+  gear:"The potato sheet · both stuffing dishes · foil.",
+  how:["The oven is already at 425°F.","Potato stacks straight from the fridge on their sheet, 25–30 min, until crisp and golden.","Stuffings on the other rack, covered with foil so they don't scorch. Uncover for the last 5 min."],
+  needs:["t4","w13","t15"]},
+ {id:"t17",day:"thu",t:35,dish:"Soup",kind:"stove",title:"Reheat the soup",
+  gear:"The soup pot or a 4-qt saucepan.",
+  how:["Low heat, stirring often so the bottom doesn't scorch. Thin with broth if it has thickened in the fridge.","After serving, its burner goes to the mac and cheese sauce."],
+  needs:["w7"]},
+ {id:"t18b",day:"thu",t:50,dish:"Mac & cheese",kind:"stove",gf:true,title:"Boil water for the GF pasta",
+  gear:"5–6 qt pot · colander used only for the GF pasta (or washed first).",
+  how:["Fourth burner. The mole, soup and gravy have the other three.","Salt the water well."]},
+ {id:"t19",day:"thu",t:60,dish:"Soup",kind:"serve",title:"Serve soup course",
+  how:["Garnish with an olive oil drizzle, thyme, pepitas or the roasted Hubbard seeds, and microgreens."],
+  needs:["t17"]},
+ {id:"t20",day:"thu",t:65,dish:"Mac & cheese",kind:"stove",gf:true,title:"Finish the GF mac and cheese",
+  how:["Cook the pasta until al dente. Start tasting 2 min before the package time, because GF pasta goes mushy fast.","Meanwhile, rewarm the sauce base on the soup's burner over medium-low, whisking.","Off the heat or on low, stir in the cheddar and Parmesan until smooth.","Drain the pasta and rinse under cold water for less than 5 seconds (per the recipe). Fold into the sauce. Serve right away."],
+  needs:["t18","t18b","t19"]},
+ {id:"t21",day:"thu",t:70,dish:"Carving",kind:"prep",title:"Carve the turkey and slice the mole breast",
+  how:["Carve the turkey: legs and thighs off, then the breasts, sliced across the grain.","Slice the mole breast ½ inch thick, spoon mole over it, and sprinkle with the reserved sesame. Label it as containing wheat (bread).","Spoon the cashew sauce over the carrots."],
+  needs:["t15","t14","t13"]},
  {id:"t22",day:"thu",t:90,dish:"Dinner",kind:"serve",title:"Dinner"},
 ];
 const byId=Object.fromEntries(STEPS.map(x=>[x.id,x]));
 if(!state.sched)state.sched={done:{},apps:"15:00",day:null};
 if(!state.tab)state.tab="list";
 const appsMin=()=>{const [h,m]=(state.sched.apps||"15:00").split(":").map(Number);return h*60+m};
-const at=x=>x.day==="wed"?x.t:appsMin()+x.t;
 const fmt=m=>{m=((m%1440)+1440)%1440;let h=Math.floor(m/60),mm=m%60;const ap=h>=12?"pm":"am";h=h%12||12;return h+":"+String(mm).padStart(2,"0")+" "+ap};
 const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
 const nowMin=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
 
+const openSteps=new Set();
+const deferred=x=>!!(x.defer&&state.sched.deferred&&state.sched.deferred[x.id]);
+const dayOf=x=>deferred(x)?"thu":x.day;
+const at=x=>{if(deferred(x))return appsMin()+x.defer.t;return x.day==="wed"?x.t:appsMin()+x.t};
+const whenTxt=y=>(dayOf(y)==="wed"?"Wed ":"")+fmt(at(y));
+
+function stepEl(x,isNow){
+  const sc=state.sched;
+  const el=document.createElement("div");el.className="step"+(sc.done[x.id]?" done":"")+(isNow?" now":"");
+  const box=document.createElement("div");box.className="box";
+  const body=document.createElement("div");body.className="body";
+  const t=document.createElement("div");t.className="t";t.textContent=x.title;body.appendChild(t);
+  const toggleDone=()=>{sc.done[x.id]=!sc.done[x.id];save();render()};
+  box.onclick=toggleDone;t.onclick=toggleDone;
+  const meta=document.createElement("div");meta.className="meta";
+  const chip=(txt,c)=>{const s=document.createElement("span");s.className="chip"+(c?" "+c:"");s.textContent=txt;meta.appendChild(s)};
+  chip(x.dish);
+  if(x.kind==="oven"&&x.dish!=="Oven")chip("Oven","oven");
+  if(x.kind==="stove")chip("Stove","stove");
+  if(x.gf)chip("GF care","gf");
+  if(deferred(x))chip("Moved from Wed","moved");
+  body.appendChild(meta);
+  if(x.needs&&x.needs.length&&!sc.done[x.id]){
+    const open=x.needs.filter(id=>!sc.done[id]);
+    const late=x.needs.filter(id=>{const y=byId[id];return dayOf(y)===dayOf(x)&&at(y)>at(x)||(dayOf(y)==="thu"&&dayOf(x)==="wed")});
+    const nd=document.createElement("div");nd.className="need"+(open.length?" warn":"");
+    nd.textContent=(open.length?"⚠ Needs first: ":"Needs: ")+x.needs.map(id=>byId[id].title+" ("+whenTxt(byId[id])+")").join(" · ");
+    body.appendChild(nd);
+    if(late.length){const w=document.createElement("div");w.className="need warn";w.textContent="⚠ Now scheduled AFTER this step: "+late.map(id=>byId[id].title).join(", ")+". Do it earlier or move it back.";body.appendChild(w)}
+  }
+  const hasMore=x.how||x.gear||x.defer||x.noDefer;
+  if(hasMore){
+    const isOpen=openSteps.has(x.id);
+    const more=document.createElement("button");more.className="linkbtn more";more.textContent=isOpen?"Hide details ▴":"Details ▾";
+    more.onclick=()=>{isOpen?openSteps.delete(x.id):openSteps.add(x.id);render()};
+    body.appendChild(more);
+    if(isOpen){
+      const det=document.createElement("div");det.className="det";
+      if(x.gear){const g=document.createElement("div");g.className="gear";const b=document.createElement("b");b.textContent="Equipment & containers: ";g.append(b,document.createTextNode(x.gear));det.appendChild(g)}
+      if(x.how){const ol=document.createElement("ol");for(const h of x.how){const li=document.createElement("li");li.textContent=h;ol.appendChild(li)}det.appendChild(ol)}
+      if(x.day==="wed"){
+        const dv=document.createElement("div");dv.className="defer";
+        if(x.noDefer){dv.textContent=x.noDefer}
+        else if(x.defer){
+          const p=document.createElement("div");p.textContent=(deferred(x)?"Moved to ":"Can move to ")+x.defer.note;dv.appendChild(p);
+          const row=document.createElement("div");row.className="row";row.style.flexWrap="wrap";row.style.marginTop="8px";
+          const b=document.createElement("button");b.className="btn ghost small";
+          b.textContent=deferred(x)?"Move back to Wednesday":"Move to Thursday";
+          b.onclick=()=>{sc.deferred=sc.deferred||{};if(deferred(x))delete sc.deferred[x.id];else sc.deferred[x.id]=true;save();render()};
+          row.appendChild(b);
+          const sibs=STEPS.filter(y=>y.day==="wed"&&y.dish===x.dish&&y.defer);
+          if(sibs.length>1){
+            const all=sibs.every(deferred);
+            const b2=document.createElement("button");b2.className="btn ghost small";
+            b2.textContent=all?"Move all "+x.dish+" prep back":"Move all "+x.dish+" prep to Thursday";
+            b2.onclick=()=>{sc.deferred=sc.deferred||{};sibs.forEach(y=>{if(all)delete sc.deferred[y.id];else sc.deferred[y.id]=true});save();render()};
+            row.appendChild(b2);
+          }
+          dv.appendChild(row);
+        }
+        det.appendChild(dv);
+      }
+      body.appendChild(det);
+    }
+  }
+  el.append(box,body);
+  return el;
+}
+
 function renderSched(){
   const v=$("schedView");v.innerHTML="";
-  const sc=state.sched;
+  const sc=state.sched;sc.deferred=sc.deferred||{};
   const day=sc.day||(today()===THU?"thu":"wed");
   const days=document.createElement("div");days.className="days";
   for(const [k,l] of [["wed","Wed · prep"],["thu","Thu · cook"]]){
@@ -460,7 +627,7 @@ function renderSched(){
     inp.onchange=()=>{if(inp.value){sc.apps=inp.value;save();render()}};
     v.appendChild(sh);
   }
-  const steps=STEPS.filter(x=>x.day===day).sort((a,b)=>at(a)-at(b));
+  const steps=STEPS.filter(x=>dayOf(x)===day).sort((a,b)=>at(a)-at(b));
   const isToday=today()===(day==="wed"?WED:THU);
   const n=nowMin();
   const next=steps.find(x=>!sc.done[x.id]);
@@ -482,29 +649,25 @@ function renderSched(){
       const sl=document.createElement("div");sl.className="slot";sl.textContent=fmt(tm);v.appendChild(sl);
       card=document.createElement("div");card.className="card";v.appendChild(card);
     }
-    const el=document.createElement("div");el.className="step"+(sc.done[x.id]?" done":"");
-    if(isToday&&!sc.done[x.id]&&next&&x.id===next.id)el.classList.add("now");
-    el.innerHTML='<div class="box"></div><div class="body"><div class="t"></div></div>';
-    el.querySelector(".t").textContent=x.title;
-    const body=el.querySelector(".body");
-    if(x.detail){const d=document.createElement("div");d.className="d";d.textContent=x.detail;body.appendChild(d)}
-    const meta=document.createElement("div");meta.className="meta";
-    const chip=(t,c)=>{const s=document.createElement("span");s.className="chip"+(c?" "+c:"");s.textContent=t;meta.appendChild(s)};
-    chip(x.dish);
-    if(x.kind==="oven"&&x.dish!=="Oven")chip("Oven","oven");
-    if(x.kind==="stove")chip("Stove","stove");
-    if(x.gf)chip("GF care","gf");
-    body.appendChild(meta);
-    if(x.needs&&x.needs.length){
-      const open=x.needs.filter(id=>!sc.done[id]);
-      const nd=document.createElement("div");nd.className="need"+(open.length&&!sc.done[x.id]?" warn":"");
-      nd.textContent=(open.length&&!sc.done[x.id]?"⚠ Needs first: ":"Needs: ")+x.needs.map(id=>{const y=byId[id];return y.title+" ("+(y.day==="wed"?"Wed ":"")+fmt(at(y))+")"}).join(" · ");
-      body.appendChild(nd);
-    }
-    el.onclick=()=>{sc.done[x.id]=!sc.done[x.id];save();render()};
-    card.appendChild(el);
+    card.appendChild(stepEl(x,isToday&&next&&x.id===next.id));
   }
   if(!nowShown){const nl=document.createElement("div");nl.className="nowline";nl.textContent="Now "+fmt(n);v.appendChild(nl)}
+  if(day==="wed"){
+    const moved=STEPS.filter(x=>x.day==="wed"&&deferred(x));
+    if(moved.length){
+      const h=document.createElement("div");h.className="slot";h.textContent="Moved to Thursday";v.appendChild(h);
+      const c=document.createElement("div");c.className="card";
+      for(const x of moved){
+        const r=document.createElement("div");r.className="step";r.style.cursor="default";
+        const b=document.createElement("div");b.className="body";
+        const t=document.createElement("div");t.className="t";t.textContent=x.title+" → Thu "+fmt(at(x));
+        const u=document.createElement("button");u.className="linkbtn more";u.textContent="Move back to Wednesday";
+        u.onclick=()=>{delete sc.deferred[x.id];save();render()};
+        b.append(t,u);r.appendChild(b);c.appendChild(r);
+      }
+      v.appendChild(c);
+    }
+  }
   const reset=document.createElement("div");reset.className="center";
   const rb=document.createElement("button");rb.className="btn ghost";rb.textContent="Uncheck this day's steps";
   rb.onclick=()=>{if(rb.dataset.armed){steps.forEach(x=>delete sc.done[x.id]);save();render()}else{rb.dataset.armed=1;rb.textContent="Tap again to uncheck";setTimeout(()=>{rb.textContent="Uncheck this day's steps";delete rb.dataset.armed},3000)}};
